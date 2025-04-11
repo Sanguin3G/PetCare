@@ -3,7 +3,23 @@ import { Delete, Update } from "../../util";
 const csrfToken = $('meta[name="csrf-token"]').attr("content");
 const TokenApi = localStorage.getItem("authTokenPassport");
 const urlFetch = "product/update";
-
+$("#ManageProduct").on("click", function () {
+    $.ajax({
+        url: "/admin/product",
+        type: "GET",
+        headers: {
+            Authorization:
+                "Bearer " + localStorage.getItem("authTokenPassport"),
+        },
+        success: function (html) {
+            // console.log("Admin page reloaded successfully");
+            window.location.href = "/admin/product";
+        },
+        error: function (xhr) {
+            console.log(xhr);
+        },
+    });
+});
 // Hàm thêm/xóa class valid/invalid
 function addClassValid(nameId) {
     $(nameId).addClass("is-valid").removeClass("is-invalid");
@@ -134,18 +150,24 @@ $(".image-preview").on("click", ".remove-btn", async function () {
 // Cập nhật sản phẩm
 $("#UpdateProForm").on("submit", async function (event) {
     event.preventDefault();
-    if ($(".is-invalid").length > 0 || $(".preview-container".length < 0)) {
+    if ($(".is-invalid").length > 0 || $(".preview-container").length < 0) {
         alert("Vui lòng nhập đầy đủ thông tin và hình ảnh sản phẩm !");
         return;
     } else {
+        $(".loading-overlay").removeClass("d-none");
+        var id = $("#idProHidden").val();
         var dataUpload = new FormData(this);
         dataUpload.append("_token", csrfToken);
+        dataUpload.append("idPro", id);
         ListImageProduct.forEach((e, index) => {
             dataUpload.append(`imagepro[${index}]`, e);
         });
+        for (let [key, value] of dataUpload.entries()) {
+            console.log(key, value);
+        }
         const response = await $.ajax({
-            url: "/api/admin/" + urlFetch,
-            type: "PATCH",
+            url: "/api/admin/" + urlFetch + "/" + id,
+            type: "POST",
             headers: {
                 Authorization:
                     "Bearer " + localStorage.getItem("authTokenPassport"),
@@ -163,10 +185,12 @@ $("#UpdateProForm").on("submit", async function (event) {
                 icon: response.status,
                 position: "bottom-right",
             });
-            $("#AddProForm")[0].reset();
-            ListImageProduct = [];
-            $(".image-preview").empty();
+            $(".loading-overlay").addClass("d-none");
+            // // $("#AddProForm")[0].reset();
+            // ListImageProduct = [];
+            // $(".image-preview").empty();
         } else {
+            $(".loading-overlay").addClass("d-none");
             $.toast({
                 heading: "Thông báo",
                 text: response.message,

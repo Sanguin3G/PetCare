@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -28,24 +29,26 @@
     <script href="{{ asset('assets/js/chart.js') }}"></script>
     {{-- toast message --}}
     <script src="
-                    https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js
-                    "></script>
+                        https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js
+                        "></script>
     <link href="
     https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
-    " rel="stylesheet">
+    "
+        rel="stylesheet">
     {{-- data table --}}
     <link href="
         https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.min.css
         " rel="stylesheet">
     <script src="
-                       https://cdn.datatables.net/2.2.2/js/dataTables.min.js
-                        "></script>
+                           https://cdn.datatables.net/2.2.2/js/dataTables.min.js
+                            "></script>
     <script src="
-                        https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.min.js
-                        "></script>
+                            https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.min.js
+                            "></script>
     @vite('resources/js/Admin/account/LogoutAdmin.js')
     @vite('resources/js/Admin/LayoutAdmin.js')
 </head>
+
 <body>
     <header id="header" class="header fixed-top d-flex align-items-center">
         <div class="d-flex align-items-center justify-content-between">
@@ -64,7 +67,8 @@
                 </li>
                 <li id="buttonLogin" class="d-none"><a href="{{ route('admin.login') }}">Đăng nhập</a></li>
                 <li id="isHasUser" class="nav-item dropdown pe-3 d-none">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
+                        data-bs-toggle="dropdown">
                         <img src="{{ asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
                         <span style="font-size:1.5vw;font-size:1.5vh" id="NameUser"
                             class="d-none d-md-block dropdown-toggle ps-2"></span>
@@ -109,7 +113,7 @@
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar">
         <ul class="sidebar-nav" id="sidebar-nav" stype="width:100%">
-            <li class="nav-item" id="RedirectHome" >
+            <li class="nav-item" id="RedirectHome">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link">
                     <i class="fa-solid fa-house-user"></i>
                     <span>Trang chủ</span>
@@ -184,6 +188,9 @@
     <!-- Load view-->
     <div id="main" class="main">
         @yield('content')
+        <div class="loading-overlay d-none">
+            <div class="spinner"></div>
+        </div>
     </div>
 
 </body>

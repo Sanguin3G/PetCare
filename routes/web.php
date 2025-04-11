@@ -21,6 +21,9 @@ use App\Http\Controllers\GoogleController;
 
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CustomerController;
+use App\Http\Controllers\User\HomeUserController;
+use App\Http\Controllers\User\ProductUserController;
+
 //Login Google
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('loginGoogle');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
@@ -81,24 +84,22 @@ Route::prefix('')->group(function () {
     Route::get('resetPassView/{token}', [UserController::class, 'Notification'])->name('user.LoadResetPassView');
     Route::post('resetPass', [UserController::class, 'resetPassword'])->name('user.resetPass');
 
-    Route::get('loginUser', [UserController::class, 'index'])->name('user.login');
+    Route::get('login', [CustomerController::class, 'Login'])->name('user.login');
     // Route::post('login', [UserController::class, 'login'])->name('user.checkAccount');
-    Route::post('loginUser', [UserController::class, 'loginCheck'])->name('user.checkLogin');
+    // Route::post('loginUser', [UserController::class, 'loginCheck'])->name('user.checkLogin');
 
-    Route::get('registerUser', [UserController::class, 'registerForm'])->name('user.register');
-    Route::post('registerUser', [UserController::class, 'register'])->name('user.registAccount');
+    Route::get('register', [CustomerController::class, 'Register'])->name('user.register');
+    // Route::post('registerUser', [UserController::class, 'register'])->name('user.registAccount');
 
-    Route::get('/', function () {
-        return view('User.HomeView');
-    })->name('user.home');
+    Route::get('/', [HomeUserController::class, 'index'])->name('user.home');
     Route::get('about', function () {
         return view('User.about');
     })->name('user.about');
     Route::get('service', [ServiceController::class, 'index'])->name('user.service');
     //product
-    Route::get('product/{id}', [ProductController::class, 'index'])->name('user.product');
+    Route::get('product/{id}', [ProductUserController::class, 'index'])->name('user.product');
     // Route::get('product/{id}', [ProductUserController::class, 'getProduct'])->name('user.getPro');
-    Route::get('product/detail/{id}/{name}', [ProductController::class, 'getDetail'])->name('user.productDetail');
+    Route::get('product/detail/{id}/{name}', [ProductUserController::class, 'getDetail'])->name('user.productDetail');
     Route::get('sort', [ProductController::class, 'Product'])->name('user.sortproduct');
     // Route::get('product/nam', [ProductUserController::class, 'SortProduct'])->name('user.sort');
 
@@ -199,9 +200,9 @@ Route::prefix('admin')->group(function () {
     Route::get('staff/create', [StaffController::class, 'create'])->name('admin.staffCreate');
     Route::get('staff/edit/{id}/{name}', [StaffController::class, 'edit'])->name('admin.staffEdit');
 
-    // Quản lý tài khoản
-    Route::get('account', [UserController::class, 'index'])->name('admin.manageAccount');
-    Route::get('account/{id}', [UserController::class, 'destroy'])->name('admin.destroy');
+    // // Quản lý tài khoản
+    // Route::get('account', [UserController::class, 'index'])->name('admin.manageAccount');
+    // Route::get('account/{id}', [UserController::class, 'destroy'])->name('admin.destroy');
 
     /*
     |-------------------------------------------------
@@ -303,3 +304,6 @@ Route::prefix('admin')->group(function () {
     // Quản lý lịch làm việc
     Route::delete('staff/schedule/delete', [ScheduleController::class, 'deleteSchedule'])->name('admin.deleteSchedule');
 });
+Route::get('/{any}', function () {
+    return view('template.404_NOT_FOUND');
+})->where('any', '.*');

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\Models\ImageProduct;
 use Throwable;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Cache;
 
 class Product extends Model
 {
@@ -32,7 +33,11 @@ class Product extends Model
     public function getListproduct()
     {
         try {
-            $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(10);
+            $GetPage = $_GET['page'];
+            $page = $GetPage ?? 1;
+            $products = Cache::remember("List_product_page_" . $page, 1440, function () {
+                return Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(10);
+            });
             return $products;
         } catch (Throwable $e) {
             Log::error($e);
@@ -43,7 +48,9 @@ class Product extends Model
     {
         try {
             $product = Product::with('ImageProduct')->where('idPro', $id)->first();
-            $category = Category::all();
+            $category = Cache::remember('list_category', 1440, function () {
+                return Category::all();
+            });
             $nameCat = Category::where('idCat', $product->idCat)->select('name', 'idCat')->first();
             return [
                 'category' => $category,
@@ -55,11 +62,12 @@ class Product extends Model
             return null;
         }
     }
-    public function updateModel($request)
+    public function updateModel($id, $request)
     {
         try {
             DB::beginTransaction();
-            $product = Product::find($request->idPro)->get();
+            $product = Product::find($id);
+            Log::error($product);
             if ($product) {
                 $product->namePro = $request->namepro;
                 $product->description = $request->mota;
@@ -70,13 +78,13 @@ class Product extends Model
                 $product->idCat = (int)$request->danhmucAddpro;
                 $product->save();
                 // xóa ảnh cũ
-                $ListImageProduct = ImageProduct::where('idPro', $request->idPro)->select('idPro', 'image')->get();
+                $ListImageProduct = ImageProduct::where('idPro', $id)->select('idPro', 'image')->get();
                 foreach ($ListImageProduct as $row) {
                     if (File::exists('assets/img-add-pro/' . $row->image)) {
                         File::delete('assets/img-add-pro/' . $row->image);
                     }
                 }
-                ImageProduct::where('idPro', $request->idPro)->delete();
+                ImageProduct::where('idPro', $id)->delete();
                 $indexImg = 0;
                 if ($files = $request->file('imagepro')) {
                     foreach ($files as $value) {
@@ -102,6 +110,13 @@ class Product extends Model
             return false;
         }
     }
+    public function getImgProduct($id)
+    {
+        $img = DB::table('image_products')->select('image')->where('idPro', $id)->limit(1)->get();
+        foreach ($img as $result) {
+            return $result->image;
+        }
+    }
     public function ImageProduct()
     {
         return $this->hasMany(ImageProduct::class, 'idPro', 'idPro');
@@ -109,7 +124,10 @@ class Product extends Model
     public function getListCategory()
     {
         try {
-            $cat = DB::table("categories")->select("name", "idCat")->get();
+            // $cat = DB::table("categories")->select("name", "idCat")->get();
+            $cat = Cache::remember('list_category', 1440, function () {
+                return DB::table("categories")->select("name", "idCat")->get();
+            });
             return $cat;
         } catch (Throwable $e) {
             Log::error($e);
@@ -185,6 +203,28 @@ class Product extends Model
             DB::rollBack();
             Log::error($e);
             return false;
+        }
+    }
+    public function getDetailProductModel($id, $name)
+    {
+        try {
+            $product = Product::with("ImageProduct")->where("idPro", $id)->first();
+            return $product;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    public function getRelatedProduct($id)
+    {
+        try {
+            $product = Product::find($id);
+            $idCat = $product->idCat;
+            $product = Product::with("ImageProduct")->where("idCat", $idCat)->where("idPro", '!=', $id)->get();
+            return $product;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
         }
     }
 }

@@ -8,7 +8,7 @@ if (session('cart')) {
         $total += 1;
     }
 }
-$firstIdService = DB::table("services")->select("id")->first();
+$firstIdService = DB::table('services')->select('id')->first();
 $product = product::select()->get();
 ?>
 <!DOCTYPE html>
@@ -37,7 +37,7 @@ $product = product::select()->get();
     {{--
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"> --}}
     <script src="{{ asset('assets/slick-carousel/slick/slick.min.js') }}"></script>
-
+    @vite('resources/js/User/Layout.js')
 </head>
 
 <body>
@@ -104,10 +104,10 @@ $product = product::select()->get();
                                     <div style="width:100%;padding-left:10px;padding-right:20px "
                                         class="d-flex justify-content-start bg-white ">
                                         <?php
-                                                                    $nameProduct = Str::slug($row->namePro);
-                                                                    ?>
+                                            $nameProduct = Str::slug($row->namePro);
+                                            ?>
                                         <a style="text-decoration:none"
-                                            href="{{ route('user.productDetail', ['id' => $row->idPro,'name'=>$nameProduct]) }}">
+                                            href="{{ route('user.productDetail', ['id' => $row->idPro, 'name' => $nameProduct]) }}">
                                             <img src="{{ asset('assets/img-add-pro/' . $row->getImgProduct($row->idPro)) }}"
                                                 class="img-fluid" style="max-width:100px;height:100%"></a>
                                         <p id="product-name-search1" class="ms-3" style="width:100%;font-size:1vw">
@@ -120,12 +120,12 @@ $product = product::select()->get();
                         </div>
                     </div>
                     <div class="buttonInforUser">
-                        @if (!Auth::guard('customer')->check())
-                        <a style="text-decoration:none;color:black;font-size: 1.3vw" class="me-2 ms-2"
-                            href="{{ route('user.login') }}">Đăng
+                        {{-- @if (!Auth::guard('customer')->check()) --}}
+                        <a style="text-decoration:none;color:black;font-size: 1.3vw"
+                            class="me-2 ms-2 buttonLogin d-none" href="{{ route('user.login') }}">Đăng
                             Nhập</a><span></span>
-                        @else
-                        <div class="nav-item dropdown me-5">
+                        {{-- @else --}}
+                        <div class="nav-item dropdown me-5 d-none" id="dropdown-user">
                             <a class=" login-button dropdown-toggle" style="width:190px" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-user"></i>
 
@@ -145,12 +145,12 @@ $product = product::select()->get();
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a style="" class="dropdown-item" href="{{ route('user.logout') }}">Đăng
-                                        Xuất<i class="fa-solid fa-right-from-bracket text-secondary ps-2"></i></a>
+                                <li><button class="dropdown-item button-logout">Đăng
+                                        Xuất<i class="fa-solid fa-right-from-bracket text-secondary ps-2"></i></button>
                                 </li>
                             </ul>
                         </div>
-                        @endif
+                        {{-- @endif --}}
                     </div>
                 </div>
                 {{-- navbar --}}
@@ -180,7 +180,7 @@ $product = product::select()->get();
                                 </li>
                                 <li class="nav-item me-4">
                                     <a class="nav-link"
-                                        href="{{ route('user.book',['id'=>$firstIdService->id]) }}"><b>Đặt
+                                        href="{{ route('user.book', ['id' => $firstIdService->id]) }}"><b>Đặt
                                             lịch </b></a>
                                 </li>
                                 <li class="nav-item me-4">
@@ -189,12 +189,11 @@ $product = product::select()->get();
                                 <li class="nav-item me-4">
                                     <a class="nav-link" type="button" href="{{ route('user.cart') }}"><b>Giỏ hàng
                                         </b><i class="fa-solid fa-cart-shopping ms-1">
-                                            @if (session('cart') && Auth::guard('customer')->check() )
+                                            {{-- @if (session('cart') && Auth::guard('customer')->check()) --}}
                                             <span
-                                                class="position-absolute top-0 ms-2 translate-middle badge rounded-pill bg-danger">{{
-                                                $total }}
+                                                class="position-absolute top-0 ms-2 translate-middle badge rounded-pill bg-danger totalInCart d-none">
                                             </span>
-                                            @endif
+                                            {{-- @endif --}}
                                         </i>
                                     </a>
                                 </li>
@@ -229,7 +228,7 @@ $product = product::select()->get();
                     <div style="height:50px;max-width:400px;padding-left:10px;padding-right:20px "
                         class="d-flex justify-content-start  ">
                         <a style="text-decoration:none"
-                            href="{{ route('user.productDetail', ['id' => $row->idPro,'name'=>$row->namePro]) }}">
+                            href="{{ route('user.productDetail', ['id' => $row->idPro, 'name' => $row->namePro]) }}">
                             <img src="{{ asset('assets/img-add-pro/' . $row->getImgProduct($row->idPro)) }}"
                                 class="img-fluid" style="max-width:100px;height:100%"></a>
                         <p id="product-name-search" class="ms-2" style="width:100%;font-size:1.2vw;font-size:1.2vh">
@@ -246,12 +245,12 @@ $product = product::select()->get();
         //searchProduct
         $(document).ready(function() {
             $(".collapse-down").hide();
-            $("#collapseButton").click(function(){
+            $("#collapseButton").click(function() {
                 $(".navbarSlideToggle").slideToggle();
             })
             $("#search_pro").click(function() {
                 $(".listPro").toggle();
-                $(document).click(function(){
+                $(document).click(function() {
                     $("#list-search-product2").toggle();
                 })
             })
@@ -294,6 +293,23 @@ $product = product::select()->get();
         .name_product_search {
             flex: 3;
         }
+
+        /* Nền tối che toàn màn hình */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-size: 18px;
+            z-index: 9999;
+        }
     </style>
     <div class="container-fluid d-flex justify-content-around flex-wrap bg-dark mt-5">
         <div class="footer1 d-flex align-items-center flex-column p-3">
@@ -328,7 +344,11 @@ $product = product::select()->get();
         </div>
 
     </div>
-
+    <div class="loading-overlay d-none">
+        <div class="spinner-grow" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <!--footer end-->
 </body>
 <script href="{{ asset('assets/js/script.js') }}"></script>

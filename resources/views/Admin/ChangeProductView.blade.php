@@ -3,7 +3,7 @@
     <div class="pagetitle">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb" style="font-size:2vw;font-size:2vh">
-                <li class="breadcrumb-item"><a href="">Quản lý sản phẩm</a></li>
+                <li class="breadcrumb-item" id="ManageProduct">Quản lý sản phẩm</li>
                 <li class="breadcrumb-item active" aria-current="page">Sửa sản phẩm</li>
             </ol>
         </nav>
@@ -11,6 +11,7 @@
             <!-- End Page Title -->
             <form style="font-size:2vw;font-size:2vh" method="post" id="UpdateProForm" enctype="multipart/form-data"
                 class="row mt-4">
+                <input value="{{ $product->idPro }}" id="idProHidden" hidden>
                 <div class="form-group col-md-8">
                     <label style="font-weight: bolder;" class="control-label">Tên sản phẩm</label>
                     <input style="font-size:2vw;font-size:2vh" class="form-control" id="namepro"
@@ -35,9 +36,9 @@
                     <label style="font-weight: bolder;" class="control-label mt-3">Danh mục</label>
                     <select style="font-size:2vw;font-size:2vh" class="form-control" id="danhmucAddpro" name="danhmucAddpro"
                         required>
-                        <option>{{ $nameCat }}</option>
+                        <option value="{{ $product->idCat }}">{{ $nameCat }}</option>
                         @foreach ($category as $row)
-                            <option>{{ $row->name }}</option>
+                            <option value="{{ $row->idCat }}">{{ $row->name }}</option>
                         @endforeach
                     </select>
                 </div>

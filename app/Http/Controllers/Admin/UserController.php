@@ -51,6 +51,8 @@ class UserController extends Controller
                 return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             } elseif ($result == 'Error') {
                 return ApiResponse::Error(null, self::MSG_ERROR, 'error', 400);
+            } elseif ($result == 'Not Found') {
+                return ApiResponse::Error(null, 'Email không tồn tại !', 'error', 200);
             } else {
                 // return response()->json($result);
                 return ApiResponse::Success($result, self::MSG_SUCCESS, 'success', 200);
@@ -60,7 +62,7 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    // gửi mã OTP
+    // send OTP code
     public function sendOTPCreateAccountController(Request $request)
     {
         try {
@@ -77,7 +79,7 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    // active tài khoản
+    // active account
     public function createAccountController(Request $request)
     {
         // return response()->json($request);

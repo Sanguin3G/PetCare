@@ -116,20 +116,20 @@
                     <tbody>
                         @foreach ($OrderDetail as $row )
                         <tr>
-                            <td>{{ $row->getProductName($row->idPro) }}</td>
+                            <td>{{ $row->namePro }}</td>
                             <td>{{ $row->number }}</td>
                             <td> {{ number_format($row->price) }}đ</td>
-                            @if ($row->getProductDiscount($row->idPro))
+                            @if ($row->discount > 0)
                             <td>
-                                {{ $row->getProductDiscount($row->idPro) }}%
+                                {{ $row->discount }}%
                             </td>
                             @else
                             <td></td>
                             @endif
-                            @if ($row->getProductDiscount($row->idPro) > 0)
+                            @if ($row->discount > 0)
                             <td>
                                 {{ number_format($row->number * ($row->price - $row->price *
-                                ($row->getProductDiscount($row->idPro) / 100))) }}đ
+                                ($row->discount / 100))) }}đ
                             </td>
                             @else
                             <td>

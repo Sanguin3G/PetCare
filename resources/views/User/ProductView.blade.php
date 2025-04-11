@@ -12,11 +12,9 @@
     }
 </style>
 <?php use Illuminate\Support\Str; ?>
-<div class="productViewUser">
+<div class="productViewUser" style="min-height: 900px">
     <!-- Danh mục sản phẩm-->
-
     <div class="container-fluid">
-
         <div class="SmallCategory">
             <div class="dropdown mb-2">
                 <a class="btn btn-info dropdown-toggle" role="button" data-bs-toggle="dropdown">
@@ -24,8 +22,8 @@
                 </a>
                 <ul class="dropdown-menu">
                     @foreach ($category as $row)
-                    <li><a class="dropdown-item" href="{{ route('user.product', ['id' => $row->idCat]) }}">{{ $row->name
-                            }}</a>
+                    <li><button type="button" class="dropdown-item button-category-item-small">{{ $row->name
+                            }}</button>
                     </li>
                     @endforeach
                 </ul>
@@ -37,22 +35,25 @@
                 <h3 class="text-center mb-2" style="font-size:2vh 2vw">Danh mục sản phẩm</h3>
                 <ul class="category list-group">
                     <!-- Lấy dữ liệu bảng danh mục xuất ra danh mục -->
+                    <input hidden id="FirstIdCatHidden" value="{{ $category[0]->idCat }}">
                     @foreach ($category as $row)
-                    <li class="list-group-item"><a href="{{ route('user.product', ['id' => $row->idCat]) }}">
-                            <button class="btn btn-white" style="width:100%">
-                                {{ $row->name }}
-                            </button></a></li>
+                    <li class="list-group-item">
+                        <button class="btn btn-white button-category-item" data-id="{{ $row->idCat }}"
+                            style="width:100%">
+                            {{ $row->name }}
+                        </button>
+                    </li>
                     @endforeach
                 </ul>
             </div>
             <div class="ProList ms-3">
                 <nav class="navbar mb-3 navbar-light bg-light justify-content-between">
-                    <h3 style="color:black">
+                    {{-- <h3 style="color:black">
                         @foreach ($categoryName as $name)
                         {{ $name->name }}
                         <p class="hiddenCat" hidden>{{ $name->idCat }}</p>
                         @endforeach
-                    </h3>
+                    </h3> --}}
                     {{-- button tìm kiếm --}}
                     <form class="form-inline d-flex me-3">
                         <input class="form-control mr-sm-2" type="text" id="nameProductSearch" placeholder="Search"
@@ -175,119 +176,5 @@
 </div>
 <!-- End mục sản phẩm-->
 <!-- Tìm kiếm sản phẩm -->
-<script>
-    //searchProduct
-        $(document).ready(function() {
-            $('.sort-button').on('click', function() {
-                var field = $(this).data('field');
-                var order = $(this).data('order');
-                var idCat = $('.hiddenCat').text();
-                $.ajax({
-                    url: "{{ route('user.sortproduct') }}",
-                    method: 'get',
-                    data: {
-                        sort_field: field,
-                        sort_order: order,
-                        catId: idCat
-                    },
-                    success: function(response) {
-                        // console.log(true);
-                        $('.product-list').empty();
-                        // console.log(response)
-                        response.forEach(function(product) {
-                            if (product.discount == null) {
-                                $('.product-list').append(`
-            {{-- Thông tin sản phẩm --}}
-            <div id="product-infor" class="card position-relative" style="max-width:15rem;height:27rem" style="border:0px">
-              {{-- giảm giá sản phẩm --}}
-              <div>
-                {{-- hình ảnh sản phẩm --}}
-                <a id="img_pro" href="/product/detail/${product.idPro}"> <img class="card-img-top img-fluid p-2"
-                    style="max-height:20rem" src="{{ asset('assets/img-add-pro/${product.image}') }}" alt="Card image cap"></a>
-              </div>
-              <div class="onsale position-absolute top-0 start-0">
-            
-              </div>
-              <div class="card-body" id="card-body">
-                <h6 id="name-product" class="card-title">
-                  ${product.namePro}
-                </h6>
-            
-                <span class="rating secondary-font">
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  5.0</span>
-                <p class="card-text text-danger ">
-                  ${product.cost}đ
-                </p>
-                <a href="cart/addPro/${product.idPro}" style="text-decoration:none;color:white"><button type="submit"
-                    style="position:absolute;top:0;right:0" class="btn btn-white shadow-sm rounded-pill"><i style="color:black"
-                      class="fa-solid fa-cart-shopping text-danger"></i></button></a>
-              </div>
-            </div>
-            `)
-                            } else {
-                                $('.product-list').append(`
-            {{-- Thông tin sản phẩm --}}
-            <div id="product-infor" class="card position-relative" style="max-width:15rem;height:27rem" style="border:0px">
-              {{-- giảm giá sản phẩm --}}
-            
-              <div>
-                {{-- hình ảnh sản phẩm --}}
-                <a id="img_pro" href="/product/detail/${product.idPro}"> <img class="card-img-top img-fluid p-2"
-                    style="max-height:20rem" src="{{ asset('assets/img-add-pro/${product.image}') }}" alt="Card image cap"></a>
-              </div>
-              <div class="card-body" id="card-body">
-                <h6 id="name-product" class="card-title">
-                  ${product.namePro}
-            
-                </h6>
-                <span class="rating secondary-font">
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  <i class="fa-solid fa-star text-warning"></i>
-                  5.0</span>
-            
-                <p class="card-text text-danger text-decoration-line-through">
-                  ${product.cost}đ
-                </p>
-                <p class="card-text text-danger" style="margin-top:-15px">
-            
-                  ${product.costDiscount}đ
-                </p>
-            
-                <a href="cart/addPro/${product.idPro}" style="text-decoration:none;color:white"><button type="submit"
-                    style="position:absolute;top:0;right:0" class="btn btn-white shadow-sm rounded-pill"><i style="color:black"
-                      class="fa-solid fa-cart-shopping text-danger"></i></button></a>
-              </div>
-            </div>
-            `)
-                            }
-                        })
-                    }
-                    // error: function(xhr, status, error) {
-                    // console.error('AJAX Error: ' + status + ' - ' + error);
-                    // console.error(xhr.responseText);
-                    // }
-                });
-            });
-            $("#nameProductSearch").on("keyup", function() {
-                var result = $("#nameProductSearch").val().toLowerCase();
-                var nameProduct = document.querySelectorAll("#name-product");
-                nameProduct.forEach((product) => {
-
-                    $(product).parent().parent().parent().filter(function() {
-                        $(product).parent().parent().toggle($(product).text().toLowerCase()
-                            .indexOf(result) > -1);
-                    })
-
-                })
-            });
-        });
-</script>
+@vite('resources/js/User/product/get.js')
 @endsection

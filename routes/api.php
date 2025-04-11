@@ -23,13 +23,30 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CustomerController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\User\ProductUserController;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Service;
 
 Route::prefix('auth')->group(function () {
     Route::post('admin/login', [UserController::class, 'checkLogin']);
+    Route::prefix('user')->group(function () {
+        Route::get('account/regist', [CustomerController::class, 'RegistAccount']);
+        Route::post('login', [UserController::class, 'checkLogin']);
+        Route::post('register', [UserController::class, 'createAccountController']);
+        Route::post('register/sendOTP', [UserController::class, 'sendOTPCreateAccountController']);
+    });
+    Route::prefix('admin')->group(function () {
+        Route::post('register', [UserController::class, 'createAccountController']);
+        Route::post('register/sendOTP', [UserController::class, 'sendOTPCreateAccountController']);
+    });
 });
 Route::middleware('auth:api')->group(function () {
+    Route::prefix('user')->group(function () {
+        Route::post("cart/checkout", [CartController::class, 'Checkout']);
+        Route::get('product', [ProductUserController::class, 'getProductAjax']);
+        Route::post('account/logout', [CustomerController::class, 'Logout']);
+    });
     Route::prefix('admin')->group(function () {
         Route::get('profile', [UserController::class, 'getUserProfile']);
         Route::post('logout', [UserController::class, 'Logout']);
@@ -43,7 +60,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('product/get', [ProductController::class, 'indexAjax']);
         Route::post('product/create', [ProductController::class, 'store']);
         Route::delete('product/delete', [ProductController::class, 'delete']);
-        Route::patch('product/update', [ProductController::class, 'update']);
+        Route::post('product/update/{id}', [ProductController::class, 'update']);
         Route::delete('product/image/delete', [ProductController::class, 'deleteImageProduct']);
+        // service
+        Route::post('service/create', [ServiceController::class, 'store']);
+        Route::post('service/update', [ServiceController::class, 'update']);
     });
 });

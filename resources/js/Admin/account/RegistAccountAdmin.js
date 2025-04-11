@@ -1,7 +1,7 @@
 var data = null;
 var email = null;
-var UrlSendOTP = "/admin/register/sendOTP";
-var UrlSubmitOTP = "/admin/register";
+var UrlSendOTP = "/api/auth/admin/register/sendOTP";
+var UrlSubmitOTP = "/api/auth/admin/register";
 $("#FormRegisterAdminButton").on("click", function () {
     try {
         // event.preventDefault();
@@ -34,7 +34,7 @@ $("#FormRegisterAdminButton").on("click", function () {
             type: "POST",
             data: data,
             success: function (response) {
-                console.log(response)
+                console.log(response);
                 if (response.status === "success") {
                     // hiển thị loading
                     $(".loading-overlay").addClass("d-none");

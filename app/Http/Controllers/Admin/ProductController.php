@@ -82,9 +82,22 @@ class ProductController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function update(Request $request)
+    public function update(string $id, Request $request)
     {
-        return response()->json($request);
+        try {
+            $model = new Product();
+            Log::info($request);
+            $result = $model->updateModel($id, $request);
+            if ($result === true) {
+                return ApiResponse::Success(null, "Cập nhật sản phẩm thành công", 'success', 200);
+            } elseif ($result === 'Not Found') {
+                return ApiResponse::Success(null, "Not Found", 'error', 200);
+            } else {
+                return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
+            }
+        } catch (Throwable $e) {
+            return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
+        }
     }
     public function deleteImageProduct(Request $request)
     {

@@ -56,6 +56,9 @@ class User extends Authenticatable
     {
         try {
             $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                return 'Not Found';
+            }
             // $userCheck = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
             $pass1 = $user->password;
             // Log::error($pass1);
