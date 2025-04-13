@@ -33,8 +33,7 @@
                         "></script>
     <link href="
     https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
-    "
-        rel="stylesheet">
+    " rel="stylesheet">
     {{-- data table --}}
     <link href="
         https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.min.css
@@ -67,8 +66,7 @@
                 </li>
                 <li id="buttonLogin" class="d-none"><a href="{{ route('admin.login') }}">Đăng nhập</a></li>
                 <li id="isHasUser" class="nav-item dropdown pe-3 d-none">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
-                        data-bs-toggle="dropdown">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                         <img src="{{ asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
                         <span style="font-size:1.5vw;font-size:1.5vh" id="NameUser"
                             class="d-none d-md-block dropdown-toggle ps-2"></span>
@@ -119,18 +117,18 @@
                     <span>Trang chủ</span>
                 </button>
             </li>
-            <li id="RedirectSchedule" class="nav-item">
+            {{-- <li id="RedirectSchedule" class="nav-item">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Lịch làm việc</span>
                 </button>
-            </li>
+            </li> --}}
 
-            <li class="nav-item" id="RedirectCustomer">
+            {{-- <li class="nav-item" id="RedirectCustomer">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-person"></i></i><span>Quản lý khách hàng</span>
                 </button>
-            </li>
+            </li> --}}
             {{-- <li class="nav-item" id="RedirectStaff">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-users-gear"></i><span>Quản lý nhân viên</span>
@@ -147,52 +145,51 @@
                     <i class="fa-solid fa-book-open"></i><span>Quản lý danh mục</span>
                 </button>
             </li>
-            <li class="nav-item" id="RedirectService">
+            {{-- <li class="nav-item" id="RedirectService">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-brands fa-servicestack"></i><span>Quản lý dịch vụ</span>
                 </button>
-            </li>
+            </li> --}}
             <li class="nav-item" id="RedirectCart">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-cart-shopping"></i><span>Quản lý đơn hàng</span>
                 </button>
             </li>
-            <li class="nav-item" id="RedirectDiscount">
+            {{-- <li class="nav-item" id="RedirectDiscount">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-tags"></i><span>Quản lý khuyến mại</span>
                 </button>
-            </li>
-            <li class="nav-item" id="RedirectVoucher">
+            </li> --}}
+            {{-- <li class="nav-item" id="RedirectVoucher">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-ticket"></i><span>Quản lý Voucher</span>
                 </button>
-            </li>
-            <li class="nav-item" id="RedirectBooking">
+            </li> --}}
+            {{-- <li class="nav-item" id="RedirectBooking">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-comments"></i><span>Quản lý lịch hẹn</span>
                 </button>
-            </li>
-            <li class="nav-item" id="RedirectPost">
+            </li> --}}
+            {{-- <li class="nav-item" id="RedirectPost">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-book"></i><span>Quản lý bài viết</span>
                 </button>
-            </li>
-            <li class="nav-item" id="RedirectAccount">
+            </li> --}}
+            {{-- <li class="nav-item" id="RedirectAccount">
                 <button style="font-size:1.5vw;font-size:1.5vh;width:100%" class="nav-link ">
                     <i class="fa-solid fa-circle-user"></i><span>Quản lý tài khoản</span>
                 </button>
-            </li>
+            </li> --}}
 
         </ul>
     </aside><!-- End Sidebar-->
     <!-- Load view-->
     <div id="main" class="main">
         @yield('content')
-        <div class="loading-overlay d-none">
-            <div class="spinner"></div>
-        </div>
     </div>
-
+    <div class="loading-overlay d-none">
+        <div class="spinner"></div>
+    </div>
 </body>
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i

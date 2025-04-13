@@ -22,18 +22,17 @@ class Category extends Model
             $name = $request->name;
             $cat = Category::where('name', $name)->exists();
             if ($cat) {
-                return 'Danh mục đã tồn tại !';
-            } else {
-                DB::beginTransaction();
-                $Category = Category::create([
-                    'name' => $request->name
-                ]);
-                DB::commit();
-                return [
-                    'idCat' => $Category->idCat,
-                    'name' => $Category->name,
-                ];
+                return 'Category has existed !';
             }
+            DB::beginTransaction();
+            $Category = Category::create([
+                'name' => $request->name
+            ]);
+            DB::commit();
+            return [
+                'idCat' => $Category->idCat,
+                'name' => $Category->name,
+            ];
         } catch (Throwable $e) {
             Log::error($e);
             DB::rollBack();
@@ -45,13 +44,12 @@ class Category extends Model
         try {
             DB::beginTransaction();
             $cat = Category::find($request->idCat);
-            if ($cat) {
-                $cat->delete();
-                DB::commit();
-                return true;
-            } else {
+            if (!$cat) {
                 return 'Not Found';
             }
+            $cat->delete();
+            DB::commit();
+            return 'true';
         } catch (Throwable $e) {
             DB::rollBack();
             return 'error';
@@ -61,9 +59,7 @@ class Category extends Model
     {
         try {
             DB::beginTransaction();
-
             $cat = Category::find($request->idCat);
-
             if (!$cat) {
                 return 'Not Found';
             }
@@ -75,13 +71,10 @@ class Category extends Model
                 Log::error($nameExists ? 'true' : 'false');
                 return 'Name has existed';
             }
-
             $cat->name = $request->name;
             $cat->save();
-
             DB::commit();
-
-            return true;
+            return 'success';
         } catch (Throwable $e) {
             DB::rollBack();
             return 'error';

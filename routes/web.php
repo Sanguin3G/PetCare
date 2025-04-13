@@ -18,64 +18,63 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\VNPAYController;
 use App\Http\Controllers\User\CommentController;
 use App\Http\Controllers\GoogleController;
-
+use App\Http\Controllers\User\OrderUserController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CustomerController;
 use App\Http\Controllers\User\HomeUserController;
 use App\Http\Controllers\User\ProductUserController;
 
 //Login Google
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('loginGoogle');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
+// Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('loginGoogle');
+// Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
 //user view
 Route::get('pdf', function () {
     return view('template.BillTemplate');
 });
 Route::prefix('')->group(function () {
     //phải đăng nhập mới được truy cập
-    Route::middleware('checkLoginUser')->group(function () {
-        //infor user
-        Route::get('infor', [UserController::class, 'inforUser'])->name('user.infor');
-        Route::PUT('infor/{id}', [UserController::class, 'updateInfor'])->name('user.updateInfor');
-        //Change pass
-        Route::get('changePass', [UserController::class, 'changePassForm'])->name('user.changePassForm');
-        Route::put('changePass', [UserController::class, 'ChangePass'])->name('user.changePass');
-        //log out
-        Route::get('logout', [UserController::class, 'logOut'])->name('user.logout');
-        //booking
-        Route::post('book', [BookingController::class, 'store'])->name('user.bookCreate');
-        //cart checkout
-        Route::post('cart/checkout', [CartController::class, 'confirmCheckOut'])->name('user.confirmCheckOut');
-        //follow orrder
-        Route::get('order', [OrderController::class, 'index'])->name('user.orderView');
-        Route::put('order/updateBook/{id}', [BookingController::class, 'update'])->name('user.updateBooking');
-        Route::get('order/destroyBook/{id}', [BookingController::class, 'destroy'])->name('user.destroyBook');
-        Route::get('saveVoucher/{id}', [VoucherController::class, 'store'])->name('user.saveVoucher');
-        // cart
-        Route::post('cart/addPro/{id}', [CartController::class, 'add'])->name('user.add');
-        Route::get('cart/destroy', [CartController::class, 'destroyCart'])->name('user.destroyCart');
-        Route::post('cart/update', [CartController::class, 'update'])->name('user.cartupdate');
-        Route::get('cart/delete/{id}', [CartController::class, 'delete'])->name('user.delete');
-        Route::get('cart/voucher', [CartController::class, 'useVoucher'])->name('user.useVoucher');
-        // thanh toán VN_PAY
-        Route::get('vn_pay/index', function () {
-            return view('VN_PAY.index');
-        });
-        Route::get('vn_pay/vnpay_create_payment', [VNPAYController::class, 'createPayment'])->name('vnpay.createPayment');
-        Route::get('vn_pay/vnpay_ipn', [VNPAYController::class, 'vnpay_ipn'])->name('vnpay.vnpay_ipn');
-        Route::get('vn_pay/vnpay_pay', function () {
-            return view('VN_PAY.vnpay_pay');
-        });
-        Route::get('vn_pay/vnpay_querydr', function () {
-            return view('VN_PAY.vnpay_querydr');
-        });
-        Route::get('vn_pay/vnpay_refund', function () {
-            return view('VN_PAY.vnpay_refund');
-        });
-        Route::get('vn_pay/vnpay_return', [CartController::class, 'saveOrderVnpay'])->name('vnpay.saveOrderToDB');
-        // hủy đơn hàng
-        Route::get('orderUser/cancel/{id}', [OrderController::class, 'cancelOrder'])->name('user.deleteOrder');
+    //infor user
+    Route::get('infor', [UserController::class, 'inforUser'])->name('user.infor');
+    Route::PUT('infor/{id}', [UserController::class, 'updateInfor'])->name('user.updateInfor');
+    //Change pass
+    Route::get('changePass', [UserController::class, 'changePassForm'])->name('user.changePassForm');
+    Route::put('changePass', [UserController::class, 'ChangePass'])->name('user.changePass');
+    //log out
+    Route::get('logout', [UserController::class, 'logOut'])->name('user.logout');
+    //booking
+    Route::post('book', [BookingController::class, 'store'])->name('user.bookCreate');
+    //cart checkout
+    Route::post('cart/checkout', [CartController::class, 'confirmCheckOut'])->name('user.confirmCheckOut');
+    //follow orrder
+    Route::get('orderUser', [OrderUserController::class, 'index'])->name('user.orderView');
+    Route::put('order/updateBook/{id}', [BookingController::class, 'update'])->name('user.updateBooking');
+    Route::get('order/destroyBook/{id}', [BookingController::class, 'destroy'])->name('user.destroyBook');
+    Route::get('saveVoucher/{id}', [VoucherController::class, 'store'])->name('user.saveVoucher');
+    // cart
+    Route::post('cart/addPro/{id}', [CartController::class, 'add'])->name('user.add');
+    Route::get('cart/destroy', [CartController::class, 'destroyCart'])->name('user.destroyCart');
+    Route::post('cart/update', [CartController::class, 'update'])->name('user.cartupdate');
+    Route::get('cart/delete/{id}', [CartController::class, 'delete'])->name('user.delete');
+    Route::get('cart/voucher', [CartController::class, 'useVoucher'])->name('user.useVoucher');
+    // thanh toán VN_PAY
+    Route::get('vn_pay/index', function () {
+        return view('VN_PAY.index');
     });
+    // Route::get('vn_pay/vnpay_create_payment', [VNPAYController::class, 'createPayment'])->name('vnpay.createPayment');
+    // Route::get('vn_pay/vnpay_ipn', [VNPAYController::class, 'vnpay_ipn'])->name('vnpay.vnpay_ipn');
+    Route::get('vn_pay/vnpay_pay', function () {
+        return view('VN_PAY.vnpay_pay');
+    });
+    Route::get('vn_pay/vnpay_querydr', function () {
+        return view('VN_PAY.vnpay_querydr');
+    });
+    Route::get('vn_pay/vnpay_refund', function () {
+        return view('VN_PAY.vnpay_refund');
+    });
+    Route::get('vn_pay/vnpay_return', [CartController::class, 'saveOrderVnpay'])->name('vnpay.saveOrderToDB');
+    // hủy đơn hàng
+    Route::get('orderUser/cancel/{id}', [OrderController::class, 'cancelOrder'])->name('user.deleteOrder');
+    // });
     // xem bài viết
     Route::get('post/{id}/{name}', [PostController::class, 'detail'])->name('user.detailPost');
     //forget pass
@@ -93,7 +92,7 @@ Route::prefix('')->group(function () {
 
     Route::get('/', [HomeUserController::class, 'index'])->name('user.home');
     Route::get('about', function () {
-        return view('User.about');
+        return view('User.AboutView');
     })->name('user.about');
     Route::get('service', [ServiceController::class, 'index'])->name('user.service');
     //product

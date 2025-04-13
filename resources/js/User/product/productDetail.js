@@ -63,22 +63,28 @@ $("#mota").click(function () {
     $(".thongtinchitiet").show();
     $(".comment").hide();
 });
+function calculateCostOfProduct(cost, discount, count) {
+    if (discount > 0) {
+        return (cost - cost * (discount / 100)) * count;
+    }
+    return cost * count;
+}
 $("#buttonAddToCart").on("click", function () {
     var count = parseInt($("#countToAdd").val());
     if (!CheckToken) {
         alert("Vui lòng đăng nhập để có thể mua hàng");
         return;
     }
+    var cost = parseFloat($(this).data("cost"));
+    var discount = parseFloat($(this).data("discount"));
     const product = {
         idPro: $(this).data("id"),
         name: $(this).data("name"),
-        cost: parseFloat($(this).data("cost")),
+        cost: calculateCostOfProduct(cost, discount, count),
         discount: parseFloat($(this).data("discount")),
         image: $(this).data("image"),
         count: count,
     };
-    console.log(product,typeof(product.count));
-    console.log(getCart());
     var result = Add(product);
     if (result) {
         $.toast({

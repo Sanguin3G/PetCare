@@ -274,8 +274,8 @@ export const renderCart = function () {
         });
         // thanh toán giỏ hàng
         $(".form-checkout-cart").on("submit", function (event) {
-            $(".loading-overlay").addClass("d-none");
             event.preventDefault();
+            $(".loading-overlay").removeClass("d-none");
             const apiFetch = "/api/user/cart/checkout";
             const csfrToken = $('meta[name="csrf-token"]').attr("content");
             const passportToken = localStorage.getItem(

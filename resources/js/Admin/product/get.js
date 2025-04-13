@@ -10,19 +10,21 @@ $(".page-link-product").on("click", async function () {
         _token: csrfToken,
     };
     const response = await Get(urlFetch + "?page=" + page, data);
-    console.log(response);
-    if (response.data !== null) {
+    console.log(response.data);
+    if (response.data.product !== null) {
         $("#table-product").empty();
-        response.data.forEach((e) => {
+        response.data.product.forEach((e) => {
+            var imageProduct = e.image_product[0];
+            var image = imageProduct.image;
             $("#table-product").append(`
                             <tr class="text-center">
                                 <td>${e.idPro}</td>
                                 <td>${e.namePro}</td>
                                 <td class="text-center">
                                     ${
-                                        e.ImageProduct &&
-                                        e.ImageProduct.length > 0
-                                            ? `<img src="/assets/img-add-pro/${e.ImageProduct[0].image}" style="width:10vw;height:auto" alt="${e.namePro}">`
+                                        e.image_product &&
+                                        e.image_product.length > 0
+                                            ? `<img src="/assets/img-add-pro/${image}" style="width:10vw;height:auto" alt="${e.namePro}">`
                                             : ""
                                     }
                                 </td>
@@ -71,17 +73,16 @@ $(".page-link-product").on("click", async function () {
                         `);
         });
         $(".loading-overlay").addClass("d-none");
-        // Cập nhật currentPage
-        var currentPage = response.current_page;
-        var lastPage = response.last_page;
+        var currentPage = response.data.current_page;
+        var lastPage = response.data.last_page;
 
-        // Cập nhật trạng thái active
+        // update status active of pagination
         $(".pagination .page-item").removeClass("active");
         $(`.pagination .page-link[data-page="${currentPage}"]`)
             .parent()
             .addClass("active");
 
-        // Cập nhật trạng thái disabled cho Previous/Next
+        // update disabled for Previous/Next
         $(".pagination .page-item").removeClass("disabled");
         if (currentPage === 1) {
             $('.pagination .page-link[data-page="' + (currentPage - 1) + '"]')

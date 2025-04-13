@@ -33,18 +33,19 @@ class Product extends Model
     public function getListproduct()
     {
         try {
-            $GetPage = $_GET['page'];
-            $page = $GetPage ?? 1;
-            $products = Cache::remember("List_product_page_" . $page, 1440, function () {
-                return Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(10);
-            });
+            $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(5);
             return $products;
         } catch (Throwable $e) {
             Log::error($e);
             return null;
         }
     }
-    public function editModel($id, $name)
+    /**
+     * @param string $id
+     * @param string $name
+     * @return array|null
+     */
+    public function editModel(string $id, string $name): ?array
     {
         try {
             $product = Product::with('ImageProduct')->where('idPro', $id)->first();
@@ -67,17 +68,20 @@ class Product extends Model
         try {
             DB::beginTransaction();
             $product = Product::find($id);
-            Log::error($product);
-            if ($product) {
-                $product->namePro = $request->namepro;
-                $product->description = $request->mota;
-                $product->count = (int)$request->countpro;
-                $product->hot = 0;
-                $product->cost = (int)$request->giabanpro;
-                $product->discount = (int)$request->discount ? (int)$request->discount : 0;
-                $product->idCat = (int)$request->danhmucAddpro;
-                $product->save();
-                // xóa ảnh cũ
+            if (!$product) {
+                return 'Not Found';
+            }
+            $product->namePro = $request->namepro;
+            $product->description = $request->mota;
+            $product->count = (int)$request->countpro;
+            $product->hot = 0;
+            $product->cost = (int)$request->giabanpro;
+            $product->discount = (int)$request->discount ? (int)$request->discount : 0;
+            $product->idCat = (int)$request->danhmucAddpro;
+            $product->save();
+            // xóa ảnh cũ
+            Log::info($request->UpdateImage);
+            if ($request->UpdateImage === 'true') {
                 $ListImageProduct = ImageProduct::where('idPro', $id)->select('idPro', 'image')->get();
                 foreach ($ListImageProduct as $row) {
                     if (File::exists('assets/img-add-pro/' . $row->image)) {
@@ -99,15 +103,13 @@ class Product extends Model
                         $imageProduct->save();
                     }
                 }
-                DB::commit();
-                return true;
-            } else {
-                return 'Not Found';
             }
+            DB::commit();
+            return 'success';
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error($e);
-            return false;
+            return 'error';
         }
     }
     public function getImgProduct($id)
@@ -179,7 +181,7 @@ class Product extends Model
                     File::delete('assets/img-add-pro/' . $row->image);
                 }
             }
-            $product = Product::where('idPro', $request->idPro)->delete();
+            Product::where('idPro', $request->idPro)->delete();
             DB::commit();
             return true;
         } catch (Throwable $e) {

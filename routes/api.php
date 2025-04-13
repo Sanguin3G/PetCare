@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\VNPAYController;
 use App\Http\Controllers\User\CommentController;
 use App\Http\Controllers\GoogleController;
-
+use App\Http\Controllers\User\OrderUserController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CustomerController;
 use App\Http\Controllers\TestController;
@@ -46,6 +46,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post("cart/checkout", [CartController::class, 'Checkout']);
         Route::get('product', [ProductUserController::class, 'getProductAjax']);
         Route::post('account/logout', [CustomerController::class, 'Logout']);
+        Route::get('order', [OrderUserController::class, 'getOrderList']);
+        Route::get('account/changepass/view', [CustomerController::class, 'GetChangePassView']);
+        Route::patch('account/changepass', [CustomerController::class, 'changePass']);
     });
     Route::prefix('admin')->group(function () {
         Route::get('profile', [UserController::class, 'getUserProfile']);
@@ -65,5 +68,8 @@ Route::middleware('auth:api')->group(function () {
         // service
         Route::post('service/create', [ServiceController::class, 'store']);
         Route::post('service/update', [ServiceController::class, 'update']);
+        //order
+        Route::get('order/detail/get/{id}', [OrderController::class, 'getDetailOrder']);
+        Route::patch('order/delivery/{id}', [OrderController::class, 'delivery']);
     });
 });

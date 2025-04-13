@@ -8,26 +8,26 @@
       <!-- End Navbar -->
       <div class="container-fluid py-4">
         {{-- Dữ liệu thống kê doanh thu theo tuần --}}
-        <input value="{{ $Monday }}" id="Monday" hidden>
-        <input value="{{ $Tuesday }}" id="Tuesday" hidden>
-        <input value="{{ $Wednesday }}" id="Wednesday" hidden>
-        <input value="{{ $Thursday }}" id="Thursday" hidden>
-        <input value="{{ $Friday }}" id="Friday" hidden>
-        <input value="{{ $Saturday }}" id="Saturday" hidden>
-        <input value="{{ $Sunday }}" id="Sunday" hidden>
+        <input value="14" id="Monday" hidden>
+        <input value="29" id="Tuesday" hidden>
+        <input value="30" id="Wednesday" hidden>
+        <input value="50" id="Thursday" hidden>
+        <input value="60" id="Friday" hidden>
+        <input value="50" id="Saturday" hidden>
+        <input value="79" id="Sunday" hidden>
         {{-- dữ liệu thống kê theo tháng --}}
-        <input value="{{ $jan }}" id="jan" hidden>
-        <input value="{{ $feb }}" id="feb" hidden>
-        <input value="{{ $mar }}" id="mar" hidden>
-        <input value="{{ $apr }}" id="apr" hidden>
-        <input value="{{ $may }}" id="may" hidden>
-        <input value="{{ $june }}" id="june" hidden>
-        <input value="{{ $july }}" id="july" hidden>
-        <input value="{{ $aug }}" id="aug" hidden>
-        <input value="{{ $sep }}" id="sep" hidden>
-        <input value="{{ $oc }}" id="oc" hidden>
-        <input value="{{ $no }}" id="no" hidden>
-        <input value="{{ $de }}" id="de" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="jan" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="feb" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="mar" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="apr" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="may" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="june" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="july" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="aug" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="sep" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="oc" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="no" hidden>
+        <input value="<?php echo rand(1000, 10000); ?>" id="de" hidden>
         <div class="row">
           <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
@@ -38,7 +38,7 @@
                 </div>
                 <div class="text-end pt-1">
                   <p class="text-sm mb-0 text-capitalize">Số đơn hàng hôm nay</p>
-                  <h4 class="mb-0">{{ $orderTotal }}</h4>
+                  <h4 class="mb-0">{{ 12 }}</h4>
                 </div>
               </div>
               {{--
@@ -57,7 +57,7 @@
                 </div>
                 <div class="text-end pt-1">
                   <p class="text-sm mb-0 text-capitalize">Sản phẩm hết hàng</p>
-                  <h4 class="mb-0">{{ $productOutTotal }}</h4>
+                  <h4 class="mb-0">{{ 1 }}</h4>
                 </div>
               </div>
               {{--
@@ -77,7 +77,7 @@
                 </div>
                 <div class="text-end pt-1">
                   <p class="text-sm mb-0 text-capitalize">Tổng khách hàng truy cập</p>
-                  <h4 class="mb-0">{{ $CustomerTotal }}</h4>
+                  <h4 class="mb-0">{{ 12 }}</h4>
                 </div>
               </div>
               {{--
@@ -96,7 +96,7 @@
                 </div>
                 <div class="text-end pt-1">
                   <p class="text-sm mb-0 text-capitalize">Doanh thu</p>
-                  <h4 class="mb-0">{{ number_format($Cost) }}đ</h4>
+                  <h4 class="mb-0">1.000.000đ</h4>
                 </div>
               </div>
               <hr class="dark horizontal my-0">
@@ -179,30 +179,7 @@
                           Trạng thái</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      @foreach ($orderDetail as $row)
-                      <tr>
-                        <td>
-                          {{ $order->getCus($row->idCus) }}
-                        </td>
-                        <td>
-                          {{ $order->getPhone($row->idCus) }}
-                        </td>
-                        <td class="align-middle text-center text-sm">
-                          {{ $row->thanhtoan }}
-                        </td>
-                        @if ($row->status > 0)
-                        <td class="align-middle text-success">
-                          Đơn hàng đã được xác nhận
-                        </td>
-                        @else
-                        <td class="align-middle text-danger">
-                          Đơn hàng chưa được xác nhận
-                        </td>
-                        @endif
-                      </tr>
-                      @endforeach
-                    </tbody>
+                
                   </table>
                 </div>
               </div>
@@ -231,27 +208,7 @@
                           Số lượng mua</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      @foreach ($product2 as $row)
-                      <tr>
-                        <td>
-                          {{ $row->namePro }}
-                        </td>
-                        <td>
-                          <img style="max-width:100px;max-height:100px"
-                            src="{{ asset('assets/img-add-pro/' . $productImg->getImgProduct($row->idPro)) }}">
-                        </td>
-                        @if ($row->discount > 0)
-                        <td class="align-middle text-center text-sm">
-                          {{ $row->discount }}%</td>
-                        @else
-                        <td></td>
-                        @endif
-                        <td class="align-middle text-center text-sm">{{ $row->Total }}
-                        </td>
-                      </tr>
-                      @endforeach
-                    </tbody>
+                  
                   </table>
                 </div>
               </div>
@@ -280,27 +237,7 @@
                           Số lượng tồn</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      @foreach ($product4 as $row)
-                      <tr>
-                        <td>
-                          {{ $row->namePro }}
-                        </td>
-                        <td>
-                          <img style="max-width:100px;max-height:100px"
-                            src="{{ asset('assets/img-add-pro/' . $productImg->getImgProduct($row->idPro)) }}">
-                        </td>
-                        @if ($row->discount > 0)
-                        <td class="align-middle text-center text-sm">
-                          {{ $row->discount }}%</td>
-                        @else
-                        <td></td>
-                        @endif
-                        <td class="align-middle text-center text-sm">{{ $row->count }}
-                        </td>
-                      </tr>
-                      @endforeach
-                    </tbody>
+                  
                   </table>
                 </div>
               </div>
@@ -317,40 +254,24 @@
               </div>
               <div class="card-body p-3">
                 <div class="timeline timeline-one-side" style="height:300px;overflow:auto">
-                  @foreach ($CustomerNotice as $row)
+                  {{-- @foreach ($CustomerNotice as $row) --}}
                   <div class="timeline-block mb-3">
                     <span class="timeline-step">
                       <i class="material-icons text-success text-gradient">thông báo</i>
                     </span>
                     <div class="timeline-content">
                       <h5 class="text-dark text-sm font-weight-bold mb-0">
-                        {{ $row->name }}
+                        Nam
                       </h5>
                       <p>Đã đăng ký tài khoản thành công</p>
                       <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                        {{ $row->created_at }}
+                        13:00h
                       </p>
                     </div>
                   </div>
                   <hr>
-                  @endforeach
-                  @foreach ($OrderNotice as $row)
-                  <div class="timeline-block mb-3">
-                    <span class="timeline-step">
-                      <i class="material-icons text-success text-gradient">thông báo</i>
-                    </span>
-                    <div class="timeline-content">
-                      <h5 class="text-dark text-sm font-weight-bold mb-0">
-                        {{ $order->getCus($row->idCus) }}
-                      </h5>
-                      <p>Đã đặt hàng</p>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                        {{ $row->created_at }}
-                      </p>
-                    </div>
-                  </div>
-                  <hr>
-                  @endforeach
+                  {{-- @endforeach --}}
+                
                 </div>
               </div>
             </div>

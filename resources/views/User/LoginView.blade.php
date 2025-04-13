@@ -63,7 +63,7 @@
                     <div class="input-group mb-3 align-items-center d-flex justify-content-center">
                         <img src="{{ asset('assets/img/google_logo-google_icongoogle-512.webp') }}"
                             class="img-fluid me-3" style="width:5%;height:5%">
-                        <a style="text-decoration: none;color:black" href="{{ route('loginGoogle') }}">Đăng nhập bằng
+                        <a style="text-decoration: none;color:black" href="#">Đăng nhập bằng
                             Google</a>
                     </div>
 

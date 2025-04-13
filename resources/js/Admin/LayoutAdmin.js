@@ -112,7 +112,7 @@ if (!token) {
     });
     $("#RedirectProduct").on("click", function () {
         $.ajax({
-            url: "/admin/product",
+            url: "/admin/product?page=1",
             type: "GET",
             headers: {
                 Authorization:
@@ -163,7 +163,7 @@ if (!token) {
     });
     $("#RedirectCart").on("click", function () {
         $.ajax({
-            url: "/admin/cart",
+            url: "/admin/order",
             type: "GET",
             headers: {
                 Authorization:
@@ -171,7 +171,7 @@ if (!token) {
             },
             success: function (html) {
                 // console.log("Admin page reloaded successfully");
-                window.location.href = "/admin/cart";
+                window.location.href = "/admin/order";
             },
             error: function (xhr) {
                 console.log(xhr);

@@ -71,7 +71,7 @@ class Cart extends Model
             if ($paymentMethod !== 'Thanh toán bằng VNPAY') {
                 // tạo dữ liệu để truyền vào mail gửi thông báo
                 $product = new Order();
-                $totalPrice = $request->Total;
+                $totalPrice = (int)$request->Total;
                 $OrderDetail = DB::table("order_detail as o")
                     ->join("products as p", "o.idPro", "=", "p.idPro")
                     ->where("o.idOrder", $idLatestOrder)

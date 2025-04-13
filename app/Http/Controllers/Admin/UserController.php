@@ -37,11 +37,6 @@ class UserController extends Controller
     {
         return view('Admin.ProfileView');
     }
-    // public function logOut()
-    // {
-    //     Auth::logout();
-    //     return redirect(route('admin.login'));
-    // }
     public function checkLogin(Request $request)
     {
         try {
@@ -49,14 +44,14 @@ class UserController extends Controller
             $result = $user->checkLoginModel($request);
             if ($result == 'Invalid') {
                 return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
-            } elseif ($result == 'Error') {
-                return ApiResponse::Error(null, self::MSG_ERROR, 'error', 400);
-            } elseif ($result == 'Not Found') {
-                return ApiResponse::Error(null, 'Email không tồn tại !', 'error', 200);
-            } else {
-                // return response()->json($result);
-                return ApiResponse::Success($result, self::MSG_SUCCESS, 'success', 200);
             }
+            if ($result == 'Error') {
+                return ApiResponse::Error(null, self::MSG_ERROR, 'error', 400);
+            }
+            if ($result == 'Not Found') {
+                return ApiResponse::Error(null, 'Email không tồn tại !', 'error', 200);
+            }
+            return ApiResponse::Success($result, self::MSG_SUCCESS, 'success', 200);
         } catch (Throwable $e) {
             Log::error($e);
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
@@ -68,13 +63,13 @@ class UserController extends Controller
         try {
             $model = new User();
             $result = $model->sendOTPCreateAccountModel($request);
-            if ($result == 0) {
+            if ($result == 'Account has existed') {
                 return ApiResponse::Error(null, self::MSG_EMAIL_EXIST, 'error', 400);
-            } elseif ($result == true) {
-                return ApiResponse::Success(null, self::MSG_SEND_OTP, 'success', 200);
-            } else {
-                return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             }
+            if ($result == 'success') {
+                return ApiResponse::Success(null, self::MSG_SEND_OTP, 'success', 200);
+            }
+            return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
         } catch (Throwable $e) {
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
@@ -82,19 +77,19 @@ class UserController extends Controller
     // active account
     public function createAccountController(Request $request)
     {
-        // return response()->json($request);
         try {
             $user = new User();
             $result = $user->createAccountModel($request);
             if ($result === 'Active account successful') {
                 return ApiResponse::Success(null, self::MSG_CREATE_ACCOUNT_SUCCESS, 'success', 200);
-            } elseif ($result === 'OTP code is expired') {
-                return ApiResponse::Error(null, self::MSG_OTP_EXPIRED, 'error', 400);
-            } elseif ($result === 'OTP not found') {
-                return ApiResponse::Error(null, self::MSG_ERROR_OTP, 'error', 400);
-            } else {
-                return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             }
+            if ($result === 'OTP code is expired') {
+                return ApiResponse::Error(null, self::MSG_OTP_EXPIRED, 'error', 400);
+            }
+            if ($result === 'OTP not found') {
+                return ApiResponse::Error(null, self::MSG_ERROR_OTP, 'error', 400);
+            }
+            return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
         } catch (Throwable $e) {
             Log::error($e);
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
@@ -104,16 +99,17 @@ class UserController extends Controller
     {
         try {
             $user = new User();
-            $result = $user->updatePasswordAdminModel($request);
+            $result = $user->updatePassword($request);
             if ($result == 'Success') {
                 return ApiResponse::Success(null, self::MSGG_CHANGE_PASSWORD_SUCCESS, 'success', 200);
-            } elseif ($result == 'Password not valid') {
-                return ApiResponse::Error(null, self::MSG_ERROR_PASS, 'error', 400);
-            } elseif ($result == 'Account Not Found') {
-                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'error', 400);
-            } else {
-                return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             }
+            if ($result == 'Password not valid') {
+                return ApiResponse::Error(null, self::MSG_ERROR_PASS, 'error', 400);
+            }
+            if ($result == 'Account Not Found') {
+                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'error', 400);
+            }
+            return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
         } catch (Throwable $e) {
             Log::error($e);
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
@@ -127,11 +123,11 @@ class UserController extends Controller
             $result = $user->updateInforAdminModel($request);
             if ($result == 'Success') {
                 return ApiResponse::Success(null, self::MSG_UPDATE_SUCCESS, 'success', 200);
-            } elseif ($result == 'Account Not Found') {
-                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'success', 400);
-            } else {
-                return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             }
+            if ($result == 'Account Not Found') {
+                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'success', 400);
+            }
+            return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
         } catch (Throwable $e) {
             Log::error($e);
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
@@ -144,11 +140,11 @@ class UserController extends Controller
             $result = $user->getProfileModel($request);
             if ($result == false) {
                 return ApiResponse::Error(NULL, self::MSG_ERROR, 'error', 500);
-            } elseif ($result == 'User Not Found') {
-                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'error', 200);
-            } else {
-                return ApiResponse::Success($result, self::MSG_SUCCESS, 'error', 200);
             }
+            if ($result == 'User Not Found') {
+                return ApiResponse::Error(null, self::MSG_ACCOUNT_NOT_EXIST, 'error', 200);
+            }
+            return ApiResponse::Success($result, self::MSG_SUCCESS, 'error', 200);
         } catch (Throwable $e) {
             return ApiResponse::Error(NULL, self::MSG_ERROR, 'error', 500);
         }
@@ -160,11 +156,11 @@ class UserController extends Controller
             $result = $user->LogoutModel($request);
             if ($result == 'success') {
                 return ApiResponse::Success($result, 'Đăng xuất thành công', 'success', 200);
-            } elseif ($result == 'error') {
-                return ApiResponse::Success($result, self::MSG_ACCOUNT_NOT_EXIST, 'error', 200);
-            } else {
-                return ApiResponse::Error($result, self::MSG_ERROR, 'error', 500);
             }
+            if ($result == 'error') {
+                return ApiResponse::Success($result, self::MSG_ACCOUNT_NOT_EXIST, 'error', 200);
+            }
+            return ApiResponse::Error($result, self::MSG_ERROR, 'error', 500);
         } catch (Throwable $e) {
             return ApiResponse::Error(null, self::MSG_ERROR, 'error', 500);
         }

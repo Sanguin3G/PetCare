@@ -1,5 +1,9 @@
 import { CheckToken } from "./checkToken";
 import { TotalItemCart, renderCart } from "./cart/cart";
+const token = localStorage.getItem("authTokenPassport_user");
+const life_time = localStorage.getItem("authTokenPassport_user_expired_at");
+const csfrToken = $('meta[name="csrf-token"]').attr("content");
+
 export const LoadLayout = function () {
     if (CheckToken() == true) {
         $("#dropdown-user").removeClass("d-none");
@@ -16,10 +20,7 @@ export const LoadLayout = function () {
 LoadLayout();
 
 $(".button-logout").on("click", function () {
-    const token = localStorage.getItem("authTokenPassport_user");
-    const life_time = localStorage.getItem("authTokenPassport_user_expired_at");
     const urlFetch = "/api/user/account/logout";
-    const csfrToken = $('meta[name="csrf-token"]').attr("content");
     if (token && life_time > new Date().getTime()) {
         try {
             $.ajax({
@@ -51,4 +52,38 @@ $(".button-logout").on("click", function () {
             console.log(e);
         }
     }
+});
+$(".button-redirect-order-view").click(function () {
+    const urlfetch = "/api/user/order";
+    $.ajax({
+        url: urlfetch,
+        type: "GET",
+        headers: {
+            Authorization: "Bearer " + token,
+        },
+        success: function (res) {
+            console.log("Response:", res);
+            $(".content").empty();
+            $(".content").append(res);
+            LoadLayout();
+            // reattachEventListeners();
+        },
+    });
+});
+$(".btn-changepass").on("click", function () {
+    var urlFetch = "/api/user/account/changepass/view";
+    $.ajax({
+        url: urlFetch,
+        type: "GET",
+        headers: {
+            Authorization: "Bearer " + token,
+        },
+        success: function (response) {
+            $(".content").empty();
+            $(".content").append(response);
+        },
+        error: function (error) {
+            console.log(response);
+        },
+    });
 });

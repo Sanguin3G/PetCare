@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Responses\ApiResponse;
 use Throwable;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\ListProductCollection;
 
 class ProductController extends Controller
 {
@@ -16,26 +17,19 @@ class ProductController extends Controller
     {
         $model = new Product();
         $products = $model->getListproduct();
-
         return view('Admin.ProductView', [
             'product' => $products->items(),
             'current_page' => $products->currentPage(),
-            'last_page' => $products->lastPage(), // Tổng số trang
-            'total' => $products->total(), // Tổng số sản phẩm
+            'last_page' => $products->lastPage(), // total pages
+            'total' => $products->total(), // // total product
             'per_page' => $products->perPage(),
         ]);
     }
     public function indexAjax(Request $request)
     {
-        // $model = new Product();
-        // $product = $model->getListproductAjax($request);
         try {
-            $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(10);
-            // return response()->json([
-            //     'products' => $products->items(), // Dữ liệu sản phẩm trên trang hiện tại
-            //     'pagination' => (string) $products->links('pagination::bootstrap-5'), // HTML phân trang
-            // ]);
-            return response()->json($products);
+            $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(5);
+            return new ListProductCollection($products);
         } catch (Throwable $e) {
             Log::error($e);
             return null;
@@ -49,15 +43,13 @@ class ProductController extends Controller
     }
     public function store(Request $request)
     {
-        // return response()->json($request);
         try {
             $model = new Product();
             $result = $model->StoreProductModel($request);
-            if ($result === true) {
+            if ($result) {
                 return ApiResponse::Success(null, "Thêm sản phẩm thành công", 'success', 200);
-            } else {
-                return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
             }
+            return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         } catch (Throwable $e) {
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
@@ -73,11 +65,10 @@ class ProductController extends Controller
         try {
             $model = new Product();
             $result = $model->deleteModel($request);
-            if ($result === true) {
+            if ($result) {
                 return ApiResponse::Success(null, "Xóa sản phẩm thành công", 'success', 200);
-            } else {
-                return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
             }
+            return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         } catch (Throwable $e) {
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
@@ -88,13 +79,13 @@ class ProductController extends Controller
             $model = new Product();
             Log::info($request);
             $result = $model->updateModel($id, $request);
-            if ($result === true) {
+            if ($result === 'success') {
                 return ApiResponse::Success(null, "Cập nhật sản phẩm thành công", 'success', 200);
-            } elseif ($result === 'Not Found') {
-                return ApiResponse::Success(null, "Not Found", 'error', 200);
-            } else {
-                return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
             }
+            if ($result === 'Not Found') {
+                return ApiResponse::Success(null, "Not Found", 'error', 200);
+            }
+            return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         } catch (Throwable $e) {
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
@@ -104,7 +95,7 @@ class ProductController extends Controller
         try {
             $model = new Product();
             $result = $model->deleteImageProductModel($request);
-            if ($result === true) {
+            if ($result) {
                 return ApiResponse::Success(null, "Xóa ảnh thành công", 'success', 200);
             } else {
                 return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);

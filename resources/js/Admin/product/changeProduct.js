@@ -159,11 +159,11 @@ $("#UpdateProForm").on("submit", async function (event) {
         var dataUpload = new FormData(this);
         dataUpload.append("_token", csrfToken);
         dataUpload.append("idPro", id);
-        ListImageProduct.forEach((e, index) => {
-            dataUpload.append(`imagepro[${index}]`, e);
-        });
-        for (let [key, value] of dataUpload.entries()) {
-            console.log(key, value);
+        if (ListImageProduct.length > 0) {
+            dataUpload.append("UpdateImage", "true");
+            ListImageProduct.forEach((e, index) => {
+                dataUpload.append(`imagepro[${index}]`, e);
+            });
         }
         const response = await $.ajax({
             url: "/api/admin/" + urlFetch + "/" + id,

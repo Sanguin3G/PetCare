@@ -131,17 +131,17 @@ $product = product::select()->get();
 
                             </a>
                             <ul class="dropdown-menu me-5" style="top:60px">
-                                <li><a class="dropdown-item" style="" href="{{ route('user.orderView') }}"><i
+                                <li><button class="dropdown-item button-redirect-order-view" style=""><i
                                             class="fa-solid fa-cart-shopping pe-2" style="color: #cf1717"></i>Đơn
-                                        hàng</a>
+                                        hàng</button>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     @csrf<a style="" class="dropdown-item" href="{{ route('user.infor') }}"><i
                                             class="fa-solid fa-gear pe-2"></i>Cài
                                         đặt</a>
-                                </li>
-                                <li><a style="" class="dropdown-item" href="{{ route('user.changePassForm') }}"><i
-                                            class="fa-solid fa-key pe-2 text-primary"></i>Đổi mật khẩu</a></li>
+                                </li> --}}
+                                <li><button style="" class="dropdown-item btn-changepass"><i
+                                            class="fa-solid fa-key pe-2 text-primary"></i>Đổi mật khẩu</button></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -171,21 +171,21 @@ $product = product::select()->get();
                                 <li class="nav-item me-4">
                                     <a class="nav-link" href="{{ route('user.about') }}"><b>Giới thiệu </b></a>
                                 </li>
-                                <li class="nav-item me-4">
+                                {{-- <li class="nav-item me-4">
                                     <a class="nav-link" href="{{ route('user.service') }}"><b> Dịch vụ</b></a>
-                                </li>
+                                </li> --}}
                                 <li class="nav-item dropdown me-4">
                                     <a class="nav-link" href="{{ route('user.product', ['id' => ' ']) }}"><b> Sản
                                             phẩm</b></a>
                                 </li>
-                                <li class="nav-item me-4">
+                                {{-- <li class="nav-item me-4">
                                     <a class="nav-link"
                                         href="{{ route('user.book', ['id' => $firstIdService->id]) }}"><b>Đặt
                                             lịch </b></a>
-                                </li>
-                                <li class="nav-item me-4">
+                                </li> --}}
+                                {{-- <li class="nav-item me-4">
                                     <a class="nav-link" href="{{ route('user.contact') }}"><b>Liên hệ </b></a>
-                                </li>
+                                </li> --}}
                                 <li class="nav-item me-4">
                                     <a class="nav-link" type="button" href="{{ route('user.cart') }}"><b>Giỏ hàng
                                         </b><i class="fa-solid fa-cart-shopping ms-1">
@@ -227,8 +227,11 @@ $product = product::select()->get();
                 <div class="listPro bg-white" style="display:none">
                     <div style="height:50px;max-width:400px;padding-left:10px;padding-right:20px "
                         class="d-flex justify-content-start  ">
+                        <?php
+                                                            $nameProduct = Str::slug($row->namePro);
+                                                            ?>
                         <a style="text-decoration:none"
-                            href="{{ route('user.productDetail', ['id' => $row->idPro, 'name' => $row->namePro]) }}">
+                            href="{{ route('user.productDetail', ['id' => $row->idPro, 'name' => $nameProduct]) }}">
                             <img src="{{ asset('assets/img-add-pro/' . $row->getImgProduct($row->idPro)) }}"
                                 class="img-fluid" style="max-width:100px;height:100%"></a>
                         <p id="product-name-search" class="ms-2" style="width:100%;font-size:1.2vw;font-size:1.2vh">
@@ -240,7 +243,9 @@ $product = product::select()->get();
             </div>
         </div>
     </div>
-    @yield('content');
+    <div class="content">
+        @yield('content');
+    </div>
     <script>
         //searchProduct
         $(document).ready(function() {
@@ -351,6 +356,6 @@ $product = product::select()->get();
     </div>
     <!--footer end-->
 </body>
-<script href="{{ asset('assets/js/script.js') }}"></script>
+<script src="{{ asset('assets/js/script.js') }}"></script>
 
 </html>

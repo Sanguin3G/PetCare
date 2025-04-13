@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use App\Models\OrderDetail;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class Order extends Model
 {
@@ -21,8 +25,136 @@ class Order extends Model
         static::creating(function ($order) {
             do {
                 $randomId = Str::upper(Str::random(10));
-            } while (self::where('id', $randomId)->exists()); // Kiểm tra trùng lặp
+            } while (self::where('id', $randomId)->exists());
             $order->id = $randomId;
         });
+    }
+    // get information detail of product
+    public function getDetailProduct(string $id)
+    {
+        try {
+            return Product::with('ImageProduct')->select('idPro', 'namePro', 'count', 'cost', 'discount')->where('idPro', $id)->first();
+        } catch (Throwable $e) {
+            Log::error("GetDetailproduct" . $e);
+            return null;
+        }
+    }
+    //get information of Order Detail
+    public function getDetailOrder(string $id)
+    {
+        try {
+            $OrderDetail = OrderDetail::where('idOrder', $id)->get();
+            foreach ($OrderDetail as $row) {
+                $row['ProductDetail'] = $this->getDetailProduct($row->idPro);
+                $row['TotalCostOfProduct'] = $this->getTotalCostOfProduct($row->id);
+            }
+            return $OrderDetail;
+        } catch (Throwable $e) {
+            Log::error("GetDetailproduct2" . $e);
+            return null;
+        }
+    }
+    // get discount of product
+    public function getDiscountProduct(string $id)
+    {
+        try {
+            $product = Product::find($id);
+            return $product->discount;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    // get total cost of each product in order
+    public function getTotalCostOfProduct(string $idOrderDetail)
+    {
+        try {
+            $orderDetail = OrderDetail::where('id', $idOrderDetail)->select('id', 'idPro', 'number', 'price')->first();
+            $discountProduct = $this->getDiscountProduct($orderDetail->idPro);
+            if ($discountProduct > 0) {
+                return number_format(($orderDetail->price - ($orderDetail->price * ($discountProduct) / 100)) * $orderDetail->number);
+            }
+            return number_format($orderDetail->price * $orderDetail->number);
+        } catch (Throwable $e) {
+            Log::error($e->getMessage());
+            return null;
+        }
+    }
+    // get total cost of Order
+    public function getTotalCostOfOrder(string $id)
+    {
+        try {
+            $order = OrderDetail::where('idOrder', $id)->select('idOrder', 'number', 'price', 'idPro')->get();
+            $totalCostOfOrder = 0;
+            foreach ($order as $row) {
+                $discountProduct = $this->getDiscountProduct($row->idPro);
+                if ($discountProduct > 0) {
+                    $totalCostOfOrder += ($row->price - ($row->price * ($discountProduct) / 100)) * $row->number;
+                } else {
+                    $totalCostOfOrder += $row->number * $row->price;
+                }
+            }
+            return $totalCostOfOrder;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    // get list order of user
+    public function getListOrderUser(int $id)
+    {
+        try {
+            $order = Order::where('idCus', $id)->orderBy("id", 'desc')->get();
+            foreach ($order as $row) {
+                $row['totalCost'] = number_format($this->getTotalCostOfOrder($row->id));
+                $row['OrderDetail'] = $this->getDetailOrder($row->id);
+            }
+            return $order;
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+    // get information detail of user in order
+    public function getListInforOfOrder()
+    {
+        try {
+            $Query = DB::table("orders as o")
+                ->join('users as u', 'u.id', '=', 'o.idCus')
+                ->select('o.id', 'o.status', 'o.created_at', 'o.idCus as IdCusInOrder', 'u.id as IdCusInUser', 'u.name', 'u.phone')
+                ->paginate(20);
+            return $Query;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    public function detailOfOrder(string $idOrder)
+    {
+        try {
+            $order = Order::where('id', $idOrder)->first();
+            $user = new User();
+            $DetailUser = $user->getDetailUser($order->idCus);
+            $order['totalCost'] = number_format($this->getTotalCostOfOrder($order->id));
+            $order['OrderDetail'] = $this->getDetailOrder($order->id);
+            $order['UserInfo'] = $DetailUser;
+            return $order;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    public function deliveryOrder(string $id)
+    {
+        try {
+            DB::beginTransaction();
+            $order = Order::find($id);
+            $order->status = 1;
+            $order->save();
+            DB::commit();
+            return true;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return false;
+        }
     }
 }

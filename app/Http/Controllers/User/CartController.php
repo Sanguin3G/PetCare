@@ -26,10 +26,10 @@ class CartController extends Controller
             if ($result) {
                 return ApiResponse::Success(null, 'Vui lòng kiểm tra đơn hàng trong giỏ hàng', 'success', 200);
             } else {
-                return ApiResponse::Error(null, 'Có lỗi xảy ra !', 'error', 500);
+                return ApiResponse::Error(null, 'Có lỗi xảy ra !else', 'error', 500);
             }
         } catch (Throwable $e) {
-            return ApiResponse::Error(null, 'Có lỗi xảy ra !', 'error', 500);
+            return ApiResponse::Error(null, 'Có lỗi xảy ra !catch', 'error', 500);
         }
     }
 }

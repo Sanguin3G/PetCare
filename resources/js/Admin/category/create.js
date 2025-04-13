@@ -20,7 +20,6 @@ $("#formCreateCategory").on("submit", function (event) {
                     "Bearer " + localStorage.getItem("authTokenPassport"),
             },
             success: function (response) {
-                console.log(response);
                 if (response.message == "Thêm danh mục thành công") {
                     $.toast({
                         heading: "Thông báo",

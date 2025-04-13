@@ -59,19 +59,12 @@ class User extends Authenticatable
             if (!$user) {
                 return 'Not Found';
             }
-            // $userCheck = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
             $pass1 = $user->password;
-            // Log::error($pass1);
             if (Hash::check($request->password, $pass1)) {
-                // if ($userCheck) {
-                // Log::error($user);
                 $token = $user->createToken($user->email)->accessToken;
-                // Auth::guard('web')->login($user);
-                // Log::info("User logged in: " . $user->id . " | Session ID: " . Session::getId());
                 return $token;
-            } else {
-                return 'Invalid';
             }
+            return 'Invalid';
         } catch (Throwable $e) {
             Log::error($e);
             return 'Error';
@@ -82,18 +75,14 @@ class User extends Authenticatable
         try {
             $user = User::where('email', $request->email)->first();
             if ($user) {
-                // return response()->json($user);
-                // đã tồn tại người dùng
-                return 0;
-            } else {
-                $OTP = mt_rand(100000, 999999);
-                event(new RegistAccount($request->email, $OTP));
-                // dispatch(new SendOTPRegister($request->email, $OTP));
-                return true;
+                return 'Account has existed';
             }
+            $OTP = mt_rand(100000, 999999);
+            event(new RegistAccount($request->email, $OTP));
+            return 'success';
         } catch (Throwable $e) {
             Log::error($e);
-            return false;
+            return 'error';
         }
     }
     // Active tài khoản
@@ -108,36 +97,32 @@ class User extends Authenticatable
                 ])
                 ->orderBy('id', 'DESC')
                 ->first();
-            if ($otp_fetch) {
-                $expired_time = $otp_fetch->expired_at;
-                $expiredTime = new DateTime($expired_time);
-                $now = new DateTime();
-                // kiểm tra xem OTP đã hết hạn hay chưa
-                if ($now > $expiredTime) {
-                    return 'OTP code is expired';
-                } else {
-                    $customer = User::where('email', $request->email)->first();
-                    if (!$customer) {
-                        $customer = new User();
-                        $customer->name = $request->name;
-                        $customer->email = $request->email;
-                        $customer->password = Hash::make($request->password);
-                        $customer->phone = $request->phone;
-                        $customer->role = $request->role;
-                        $customer->status = 'active';
-                        $customer->save();
-                        // xóa mã otp vừa tạo
-                        $otp = DB::table('opt_regist_forget_account')
-                            ->where([
-                                'email' => $request->email,
-                                'OTP' => $request->OTP
-                            ])->delete();
-                    }
-                }
+            if (!$otp_fetch) {
+                return "OTP not found";
+            }
+            $expired_time = $otp_fetch->expired_at;
+            $expiredTime = new DateTime($expired_time);
+            $now = new DateTime();
+            if ($now > $expiredTime) {
+                return 'OTP code is expired';
+            }
+            $customer = User::where('email', $request->email)->first();
+            if (!$customer) {
+                $customer = new User();
+                $customer->name = $request->name;
+                $customer->email = $request->email;
+                $customer->password = Hash::make($request->password);
+                $customer->phone = $request->phone;
+                $customer->role = $request->role;
+                $customer->status = 'active';
+                $customer->save();
+                DB::table('opt_regist_forget_account')
+                    ->where([
+                        'email' => $request->email,
+                        'OTP' => $request->OTP
+                    ])->delete();
                 DB::commit();
                 return 'Active account successful';
-            } else {
-                return "OTP not found";
             }
         } catch (Throwable $e) {
             DB::rollBack();
@@ -145,28 +130,27 @@ class User extends Authenticatable
             return 'Error';
         }
     }
-    // đổi mật khẩu
-    public function updatePasswordAdminModel($request)
+    // change password
+    public function updatePassword($request)
     {
         try {
             DB::beginTransaction();
-            $id = Auth::guard('api')->user()->id;
             $email =  Auth::guard('api')->user()->email;
             $user = User::where('email', $email)->first();
-            if ($user) {
-                $oldPass = $user->password;
-                Log::error($oldPass);
-                if (Hash::check($request->new_password, $oldPass)) {
-                    $user->password = Hash::make($request->new_password);
-                    Log::error(1);
-                    $user->save();
-                    DB::commit();
-                    return "Success";
-                } else {
-                    return "Password not valid";
-                }
-            } else {
+            if (!$user) {
                 return "Account Not Found";
+            }
+            $oldPass = $user->password;
+            Log::error($oldPass);
+            if (!Hash::check($request->new_password, $oldPass)) {
+                return "Password not valid";
+            }
+            if (Hash::check($request->new_password, $oldPass)) {
+                $user->password = Hash::make($request->new_password);
+                Log::error(1);
+                $user->save();
+                DB::commit();
+                return "Success";
             }
         } catch (Throwable $e) {
             DB::rollBack();
@@ -179,17 +163,15 @@ class User extends Authenticatable
         try {
             DB::beginTransaction();
             $id = Auth::guard('api')->user()->id;
-            $email = Auth::guard('api')->user()->email;
             $user = User::find($id);
-            if ($user) {
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->save();
-                DB::commit();
-                return "Success";
-            } else {
+            if (!$user) {
                 return "Account Not Found";
             }
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+            DB::commit();
+            return "Success";
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error($e);
@@ -199,7 +181,10 @@ class User extends Authenticatable
     public function getProfileModel($request)
     {
         try {
-            $user = $request->user(); // Lấy user đã xác thực qua token
+            $user = $request->user();
+            if (!$user) {
+                return 'User Not Found';
+            }
             if ($user) {
                 $data = [
                     'id' => $user->id,
@@ -211,8 +196,6 @@ class User extends Authenticatable
                     'image' => $user->image
                 ];
                 return (object)$data;
-            } else {
-                return 'User Not Found';
             }
         } catch (Throwable $e) {
             Log::error($e);
@@ -222,15 +205,24 @@ class User extends Authenticatable
     public function LogoutModel($request)
     {
         try {
-            if ($request->user()) {
-                $request->user()->token()->revoke(); // Thu hồi token
-                return 'success';
-            } else {
+            if (!$request->user()) {
                 return 'error';
             }
+            $request->user()->token()->revoke(); // Thu hồi token
+            return 'success';
         } catch (Throwable $e) {
             Log::error($e);
-            return false;
+            return 'false';
+        }
+    }
+    public function getDetailUser(int $idUser)
+    {
+        try {
+            $user = User::where('id', $idUser)->select('id', 'name', 'email', 'phone', 'image')->first();
+            return $user;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
         }
     }
     // /**
