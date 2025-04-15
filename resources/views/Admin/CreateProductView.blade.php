@@ -42,7 +42,6 @@
                     <option value="{{ $row->idCat }}">{{ $row->name }}</option>
                     @endforeach
                     @endif
-
                 </select>
             </div>
             <div class="form-group ">

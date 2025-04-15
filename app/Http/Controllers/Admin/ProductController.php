@@ -10,13 +10,19 @@ use App\Http\Responses\ApiResponse;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\ListProductCollection;
+use Illuminate\Support\Arr;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
+    protected $product;
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
     public function index()
     {
-        $model = new Product();
-        $products = $model->getListproduct();
+        $products = $this->product->getListproduct();
         return view('Admin.ProductView', [
             'product' => $products->items(),
             'current_page' => $products->currentPage(),
@@ -25,7 +31,11 @@ class ProductController extends Controller
             'per_page' => $products->perPage(),
         ]);
     }
-    public function indexAjax(Request $request)
+    /**
+     * @param Request $request 
+     * @return ListProductCollection|null 
+     */
+    public function indexAjax(Request $request): ListProductCollection|null
     {
         try {
             $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(5);
@@ -37,15 +47,17 @@ class ProductController extends Controller
     }
     public function create()
     {
-        $model = new Product();
-        $category = $model->getListCategory();
+        $category = $this->product->getListCategory();
         return view('Admin.CreateProductView', ['category' => $category]);
     }
-    public function store(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function store(Request $request): JsonResponse
     {
         try {
-            $model = new Product();
-            $result = $model->StoreProductModel($request);
+            $result = $this->product->StoreProductModel($request);
             if ($result) {
                 return ApiResponse::Success(null, "Thêm sản phẩm thành công", 'success', 200);
             }
@@ -54,17 +66,24 @@ class ProductController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function edit($id, $name)
+    /**
+     * @param string $id
+     * @param string $name
+     * @return view
+     */
+    public function edit(string $id, string $name)
     {
-        $model = new Product();
-        $result = $model->editModel($id, $name);
+        $result = $this->product->editModel($id, $name);
         return view('Admin.ChangeProductView', ['product' => $result['product'], 'category' => $result['category'], 'nameCat' => $result['nameCat']]);
     }
-    public function delete(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function delete(Request $request): JsonResponse
     {
         try {
-            $model = new Product();
-            $result = $model->deleteModel($request);
+            $result = $this->product->deleteModel($request);
             if ($result) {
                 return ApiResponse::Success(null, "Xóa sản phẩm thành công", 'success', 200);
             }
@@ -73,12 +92,14 @@ class ProductController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function update(string $id, Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function update(string $id, Request $request): JsonResponse
     {
         try {
-            $model = new Product();
-            Log::info($request);
-            $result = $model->updateModel($id, $request);
+            $result = $this->product->updateModel($id, $request);
             if ($result === 'success') {
                 return ApiResponse::Success(null, "Cập nhật sản phẩm thành công", 'success', 200);
             }
@@ -90,19 +111,36 @@ class ProductController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function deleteImageProduct(Request $request)
+
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function deleteImageProduct(Request $request): JsonResponse
     {
         try {
-            $model = new Product();
-            $result = $model->deleteImageProductModel($request);
+            $result = $this->product->deleteImageProductModel($request);
             if ($result) {
                 return ApiResponse::Success(null, "Xóa ảnh thành công", 'success', 200);
-            } else {
-                return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
             }
+            return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         } catch (Throwable $e) {
             Log::error($e);
             return ApiResponse::Error(null, "Có lỗi xảy ra", 'error', 500);
+        }
+    }
+    /**
+     * @param Request $request
+     * @return ApiResponse|ListProductCollection
+     */
+    public function findProductByName(Request $request): JsonResponse|ListProductCollection
+    {
+        try {
+            $result = $this->product->getListProductByName($request->text);
+            Log::info($result);
+            return new ListProductCollection($result);
+        } catch (Throwable $e) {
+            return ApiResponse::Error(null, 'Error', 'error', 500);
         }
     }
 }

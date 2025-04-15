@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ImageProduct;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Throwable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
@@ -26,11 +28,20 @@ class Product extends Model
         static::creating(function ($product) {
             do {
                 $randomId = Str::upper(Str::random(10));
-            } while (self::where('idPro', $randomId)->exists()); // Kiểm tra trùng lặp
+            } while (self::where('idPro', $randomId)->exists());
             $product->idPro = $randomId;
         });
     }
-    public function getListproduct()
+    public function ImageProduct()
+    {
+        return $this->hasMany(ImageProduct::class, 'idPro', 'idPro');
+    }
+    /**
+     * Get List Product order by IdPro desc
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|null 
+     */
+    public function getListproduct(): LengthAwarePaginator|null
     {
         try {
             $products = Product::with('ImageProduct')->orderBy('idPro', 'desc')->paginate(5);
@@ -63,7 +74,12 @@ class Product extends Model
             return null;
         }
     }
-    public function updateModel($id, $request)
+    /**
+     * @param string $id
+     * @param $request
+     * @return string
+     */
+    public function updateModel($id, $request): string
     {
         try {
             DB::beginTransaction();
@@ -79,8 +95,7 @@ class Product extends Model
             $product->discount = (int)$request->discount ? (int)$request->discount : 0;
             $product->idCat = (int)$request->danhmucAddpro;
             $product->save();
-            // xóa ảnh cũ
-            Log::info($request->UpdateImage);
+            // If request send file image, delete old image
             if ($request->UpdateImage === 'true') {
                 $ListImageProduct = ImageProduct::where('idPro', $id)->select('idPro', 'image')->get();
                 foreach ($ListImageProduct as $row) {
@@ -112,31 +127,38 @@ class Product extends Model
             return 'error';
         }
     }
-    public function getImgProduct($id)
+    /**
+     * @param string $id
+     * @return string
+     */
+    public function getImgProduct($id): string
     {
-        $img = DB::table('image_products')->select('image')->where('idPro', $id)->limit(1)->get();
-        foreach ($img as $result) {
-            return $result->image;
-        }
+        $img = DB::table('image_products')->select('image')->where('idPro', $id)->limit(1)->first();
+        return $img->image;
     }
-    public function ImageProduct()
-    {
-        return $this->hasMany(ImageProduct::class, 'idPro', 'idPro');
-    }
-    public function getListCategory()
+    /**
+     *
+     * @return \Illuminate\Support\Collection|null
+     */
+    public function getListCategory(): ?Collection
     {
         try {
             // $cat = DB::table("categories")->select("name", "idCat")->get();
-            $cat = Cache::remember('list_category', 1440, function () {
-                return DB::table("categories")->select("name", "idCat")->get();
-            });
+            // $cat = Cache::remember('list_category', 1440, function () {
+            //     return DB::table("categories")->select("name", "idCat")->get();
+            // });
+            $cat = DB::table("categories")->select("name", "idCat")->get();
             return $cat;
         } catch (Throwable $e) {
             Log::error($e);
             return null;
         }
     }
-    public function StoreProductModel($request)
+    /**
+     * @param $request
+     * @return bool
+     */
+    public function StoreProductModel($request): bool
     {
         try {
             DB::beginTransaction();
@@ -171,7 +193,11 @@ class Product extends Model
             return false;
         }
     }
-    public function deleteModel($request)
+    /**
+     * @param $request
+     * @return bool
+     */
+    public function deleteModel($request): bool
     {
         try {
             DB::beginTransaction();
@@ -190,7 +216,11 @@ class Product extends Model
             return false;
         }
     }
-    public function deleteImageProductModel($request)
+    /**
+     * @param $request
+     * @return bool
+     */
+    public function deleteImageProductModel($request): bool
     {
         try {
             DB::beginTransaction();
@@ -207,7 +237,14 @@ class Product extends Model
             return false;
         }
     }
-    public function getDetailProductModel($id, $name)
+    /**
+     * 
+     *
+     * @param int $id 
+     * @param string|null $name 
+     * @return \App\Models\Product|null 
+     */
+    public function getDetailProductModel($id, $name): ?Product
     {
         try {
             $product = Product::with("ImageProduct")->where("idPro", $id)->first();
@@ -217,12 +254,34 @@ class Product extends Model
             return null;
         }
     }
-    public function getRelatedProduct($id)
+    /**
+     *
+     * @param int $id 
+     * @return \Illuminate\Support\Collection|null 
+     */
+    public function getRelatedProduct($id): ?Collection
     {
         try {
             $product = Product::find($id);
             $idCat = $product->idCat;
             $product = Product::with("ImageProduct")->where("idCat", $idCat)->where("idPro", '!=', $id)->get();
+            return $product;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return null;
+        }
+    }
+    /**
+     * @param string $text
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|null 
+     */
+    // Find product by name
+    public function getListProductByName(String $text): ?LengthAwarePaginator
+    {
+        try {
+            // Log::info($text);
+            $product = Product::with('ImageProduct')->where('namePro', 'LIKE', '%' . $text . '%')->orderBy('idPro', 'desc')->paginate(5);
+            // Log::info($text);
             return $product;
         } catch (Throwable $e) {
             Log::error($e);

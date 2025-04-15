@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Events\ForgetPassword;
 use App\Events\RegistAccount;
+use App\Jobs\DeleteOldOTPJob;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,17 +27,6 @@ class User extends Authenticatable
     public $primaryKey = 'id';
     public $timestamp = true;
     public $incrementing = true;
-    // public $keyType = 'string';
-    // protected static function boot()
-    // {
-    //     parent::boot();
-    //     static::creating(function ($user) {
-    //         do {
-    //             $randomId = Str::upper(Str::random(15));
-    //         } while (self::where('id', $randomId)->exists());
-    //         $user->id = $randomId;
-    //     });
-    // }
     protected $fillable = [
         'name',
         'email',
@@ -51,8 +42,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    public function checkLoginModel($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function checkLoginModel($request): string
     {
         try {
             $user = User::where('email', $request->email)->first();
@@ -60,6 +55,7 @@ class User extends Authenticatable
                 return 'Not Found';
             }
             $pass1 = $user->password;
+            Log::info($user);
             if (Hash::check($request->password, $pass1)) {
                 $token = $user->createToken($user->email)->accessToken;
                 return $token;
@@ -70,7 +66,12 @@ class User extends Authenticatable
             return 'Error';
         }
     }
-    public function sendOTPCreateAccountModel($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function sendOTPCreateAccountModel($request): string
     {
         try {
             $user = User::where('email', $request->email)->first();
@@ -85,8 +86,34 @@ class User extends Authenticatable
             return 'error';
         }
     }
-    // Active tài khoản
-    public function createAccountModel($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function sendOTPForgetPasswordAccountModel($email): string
+    {
+        try {
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                return 'Email not exist';
+            }
+            $OTP = mt_rand(100000, 999999);
+            event(new ForgetPassword($email, $OTP));
+            return 'success';
+        } catch (Throwable $e) {
+            Log::error($e);
+            return 'error';
+        }
+    }
+
+    // Active account
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function createAccountModel($request): string
     {
         try {
             DB::beginTransaction();
@@ -98,7 +125,7 @@ class User extends Authenticatable
                 ->orderBy('id', 'DESC')
                 ->first();
             if (!$otp_fetch) {
-                return "OTP not found";
+                return 'OTP not found';
             }
             $expired_time = $otp_fetch->expired_at;
             $expiredTime = new DateTime($expired_time);
@@ -122,16 +149,22 @@ class User extends Authenticatable
                         'OTP' => $request->OTP
                     ])->delete();
                 DB::commit();
-                return 'Active account successful';
             }
+            return 'Active account successful';
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error($e);
             return 'Error';
         }
     }
+
     // change password
-    public function updatePassword($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function updatePassword($request): string
     {
         try {
             DB::beginTransaction();
@@ -147,18 +180,22 @@ class User extends Authenticatable
             }
             if (Hash::check($request->new_password, $oldPass)) {
                 $user->password = Hash::make($request->new_password);
-                Log::error(1);
                 $user->save();
                 DB::commit();
-                return "Success";
             }
+            return "Success";
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error($e);
             return "Error";
         }
     }
-    public function updateInforAdminModel($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function updateInforAdminModel($request): string
     {
         try {
             DB::beginTransaction();
@@ -178,7 +215,12 @@ class User extends Authenticatable
             return "Error";
         }
     }
-    public function getProfileModel($request)
+    /**
+     * @param $request
+     * @return string|object
+     * 
+     *  */
+    public function getProfileModel($request): string|object
     {
         try {
             $user = $request->user();
@@ -195,14 +237,19 @@ class User extends Authenticatable
                     'status' => $user->status ?? null,
                     'image' => $user->image
                 ];
-                return (object)$data;
             }
+            return (object)$data;
         } catch (Throwable $e) {
             Log::error($e);
-            return false;
+            return 'error';
         }
     }
-    public function LogoutModel($request)
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function LogoutModel($request): string
     {
         try {
             if (!$request->user()) {
@@ -215,7 +262,13 @@ class User extends Authenticatable
             return 'false';
         }
     }
-    public function getDetailUser(int $idUser)
+    /**
+     * Get detail user by id
+     * 
+     * @param int $idUser
+     * @return \App\Models\User|null
+     */
+    public function getDetailUser(int $idUser): ?User
     {
         try {
             $user = User::where('id', $idUser)->select('id', 'name', 'email', 'phone', 'image')->first();
@@ -225,16 +278,70 @@ class User extends Authenticatable
             return null;
         }
     }
-    // /**
-    //  * Get the attributes that should be cast.
-    //  *
-    //  * @return array<string, string>
-    //  */
-    // protected function casts(): array
-    // {
-    //     return [
-    //         'email_verified_at' => 'datetime',
-    //         'password' => 'hashed',
-    //     ];
-    // }
+    /**
+     * @param $request
+     * @return string
+     * 
+     *  */
+    public function ResetPasswordAccountModel($request): string
+    {
+        try {
+            $OTP = $request->OTP;
+            $email = $request->email;
+            $newpass = $request->password;
+            Log::info($newpass);
+            if ($this->checkOTP($OTP, $email)) {
+                $this->resetPass($email, $newpass);
+                return 'success';
+            }
+            return 'OTP not valid';
+        } catch (Throwable $e) {
+            Log::error("Error in ResetPasswordAccountModel " . $e->getMessage());
+            return 'error';
+        }
+    }
+    /**
+     * @param string $email
+     * @param string $newpass
+     * @return bool
+     * 
+     *  */
+    protected function resetPass(string $email, string $newpass): bool
+    {
+        try {
+            DB::beginTransaction();
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                return false;
+            }
+            $user->password = Hash::make($newpass);
+            $user->save();
+            dispatch(new DeleteOldOTPJob($email));
+            DB::commit();
+            return true;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error($e);
+            return false;
+        }
+    }
+    /**
+     * @param string $OTP
+     * @param string $email
+     * @return bool
+     * 
+     *  */
+    protected function checkOTP($OTP, $email): bool
+    {
+        try {
+            $check = DB::table("opt_regist_forget_account")->where(['email' => $email, 'OTP' => $OTP])->orderBy('id', 'desc')->first();
+            if ($check) {
+                return true;
+            }
+            return false;
+        } catch (Throwable $e) {
+            Log::error($e);
+            return false;
+        }
+    }
 }

@@ -4,35 +4,38 @@ const CountProduct = $("#CountProduct").text();
 if (CountProduct <= 0) {
     $("#ButtonSoldOut").removeClass("d-none");
 }
-var listImage = document.querySelectorAll(".list-img");
-listImage.forEach((img) => {
-    var a = $(img).attr("src");
-    $(img).click(function () {
-        $(".main-img-product").attr("src", a);
+$(document).ready(function () {
+    var listImage = document.querySelectorAll(".list-img");
+    listImage.forEach((img) => {
+        var a = $(img).attr("src");
+        $(img).click(function () {
+            $(".main-img-product").attr("src", a);
+        });
+    });
+    $(".img-slide").slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        infinite: true,
+        arrows: true,
+        centerMode: false,
+        cssEase: "linear",
+        accessibility: true,
+        autoplay: true,
+        autoplaySpeed: 900,
+        vertical: true,
+    });
+    $(".img-slide-small").slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        infinite: true,
+        arrows: true,
+        cssEase: "linear",
+        accessibility: true,
+        autoplay: true,
+        autoplaySpeed: 900,
     });
 });
-$(".img-slide").slick({
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    infinite: true,
-    arrows: true,
-    centerMode: false,
-    cssEase: "linear",
-    accessibility: true,
-    autoplay: true,
-    autoplaySpeed: 900,
-    vertical: true,
-});
-$(".img-slide-small").slick({
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    infinite: true,
-    arrows: true,
-    cssEase: "linear",
-    accessibility: true,
-    autoplay: true,
-    autoplaySpeed: 900,
-});
+
 var CurrentCount = parseInt($(".number-quantity").val());
 $(".number-quantity").change(function () {
     CurrentCount = parseInt($(".number-quantity").val());

@@ -15,8 +15,11 @@ class Category extends Model
     public $primaryKey = 'idCat';
     public $timestamp = true;
     protected $fillable = ['name'];
-
-    public function createCategory($request)
+    /**
+     * @param $request
+     * @return array|string
+     */
+    public function createCategory($request): array|string
     {
         try {
             $name = $request->name;
@@ -36,10 +39,14 @@ class Category extends Model
         } catch (Throwable $e) {
             Log::error($e);
             DB::rollBack();
-            return false;
+            return 'error';
         }
     }
-    public function deleteCategory($request)
+    /**
+     * @param $request
+     * @return string
+     */
+    public function deleteCategory($request): string
     {
         try {
             DB::beginTransaction();
@@ -55,7 +62,11 @@ class Category extends Model
             return 'error';
         }
     }
-    public function updateCategory($request)
+    /**
+     * @param $request
+     * @return string
+     */
+    public function updateCategory($request): string
     {
         try {
             DB::beginTransaction();
@@ -63,10 +74,9 @@ class Category extends Model
             if (!$cat) {
                 return 'Not Found';
             }
-            // Kiểm tra tên đã tồn tại, ngoại trừ danh mục hiện tại
             $nameExists = Category::where('name', $request->name)
                 ->first();
-            Log::error($nameExists);
+            // if name was existed return 
             if ($nameExists) {
                 Log::error($nameExists ? 'true' : 'false');
                 return 'Name has existed';

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderDetail;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -29,8 +31,12 @@ class Order extends Model
             $order->id = $randomId;
         });
     }
-    // get information detail of product
-    public function getDetailProduct(string $id)
+    /**
+     * get information detail of product
+     * @param string $id
+     * @return \App\Models\Product|null
+     */
+    public function getDetailProduct(string $id): Product|null
     {
         try {
             return Product::with('ImageProduct')->select('idPro', 'namePro', 'count', 'cost', 'discount')->where('idPro', $id)->first();
@@ -39,8 +45,12 @@ class Order extends Model
             return null;
         }
     }
-    //get information of Order Detail
-    public function getDetailOrder(string $id)
+    /**
+     * get information of Order Detail
+     * @param string $id
+     * @return \Illuminate\Support\Collection|null
+     *  */
+    public function getDetailOrder(string $id): Collection|null
     {
         try {
             $OrderDetail = OrderDetail::where('idOrder', $id)->get();
@@ -54,8 +64,14 @@ class Order extends Model
             return null;
         }
     }
-    // get discount of product
-    public function getDiscountProduct(string $id)
+
+
+    /**
+     * get discount of product
+     * @param string $id
+     * @return int|null
+     */
+    public function getDiscountProduct(string $id): int|null
     {
         try {
             $product = Product::find($id);
@@ -65,8 +81,12 @@ class Order extends Model
             return null;
         }
     }
-    // get total cost of each product in order
-    public function getTotalCostOfProduct(string $idOrderDetail)
+    /**
+     *  get total cost of each product in order
+     * @param string $idOrderDetail
+     * @return string|null
+     */
+    public function getTotalCostOfProduct(string $idOrderDetail): string|null
     {
         try {
             $orderDetail = OrderDetail::where('id', $idOrderDetail)->select('id', 'idPro', 'number', 'price')->first();
@@ -80,8 +100,12 @@ class Order extends Model
             return null;
         }
     }
-    // get total cost of Order
-    public function getTotalCostOfOrder(string $id)
+    /**
+     * get total cost of Order
+     * @param string $idOrderDetail
+     * @return int|null
+     */
+    public function getTotalCostOfOrder(string $id): int|null
     {
         try {
             $order = OrderDetail::where('idOrder', $id)->select('idOrder', 'number', 'price', 'idPro')->get();
@@ -100,8 +124,12 @@ class Order extends Model
             return null;
         }
     }
-    // get list order of user
-    public function getListOrderUser(int $id)
+    /**
+     * get list order of user
+     * @param int $idOrder
+     * @return \Illuminate\Support\Collection|null
+     */
+    public function getListOrderUser(int $id): Collection|null
     {
         try {
             $order = Order::where('idCus', $id)->orderBy("id", 'desc')->get();
@@ -114,8 +142,10 @@ class Order extends Model
             return null;
         }
     }
-    // get information detail of user in order
-    public function getListInforOfOrder()
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|null
+     */
+    public function getListInforOfOrder(): LengthAwarePaginator|null
     {
         try {
             $Query = DB::table("orders as o")
@@ -128,7 +158,17 @@ class Order extends Model
             return null;
         }
     }
-    public function detailOfOrder(string $idOrder)
+    /**
+     * Get detail order include:
+     * - Information of Order
+     * - Products in order
+     * - Total cost
+     * - Information of customer
+     *
+     * @param string $idOrder
+     * @return \Illuminate\Database\Eloquent\Model|null 
+     */
+    public function detailOfOrder(string $idOrder): Model|null
     {
         try {
             $order = Order::where('id', $idOrder)->first();
@@ -143,7 +183,12 @@ class Order extends Model
             return null;
         }
     }
-    public function deliveryOrder(string $id)
+    /**
+     * confirm delevery order
+     * @param string id
+     * @return bool
+     */
+    public function deliveryOrder(string $id): bool
     {
         try {
             DB::beginTransaction();

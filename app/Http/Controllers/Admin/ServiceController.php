@@ -10,6 +10,11 @@ use Throwable;
 
 class ServiceController extends Controller
 {
+    protected $service;
+    public function __construct(Service $service)
+    {
+        $this->service = $service;
+    }
     public function index()
     {
         $service = Service::paginate(10);
@@ -22,8 +27,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         try {
-            $model = new Service();
-            $result = $model->createServiceModel($request);
+            $result = $this->service->createServiceModel($request);
             if ($result === true) {
                 return ApiResponse::Success(null, 'Thêm dịch vụ thành công !', 'success', 200);
             } elseif ($result === 'Existed') {
@@ -43,8 +47,7 @@ class ServiceController extends Controller
     public function update($id, $request)
     {
         try {
-            $model = new Service();
-            $result = $model->updateModel($id, $request);
+            $result = $this->service->updateModel($id, $request);
             if ($result === true) {
                 return ApiResponse::Success(null, 'Cập nhật dịch vụ thành công !', 'success', 200);
             } elseif ($result === 'Existed') {

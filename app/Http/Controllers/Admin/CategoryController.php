@@ -6,20 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class CategoryController extends Controller
 {
+    protected $model;
+    public function __construct(Category $category)
+    {
+        $this->model = $category;
+    }
     public function index()
     {
         $category = Category::paginate(10);
         return view('Admin.CategoryView')->with('category', $category);
     }
-    public function store(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function store(Request $request): JsonResponse
     {
         try {
-            $model = new Category();
-            $result = $model->createCategory($request);
+            $result = $this->model->createCategory($request);
             if (is_array($result)) {
                 return ApiResponse::Error($result, 'Thêm danh mục thành công', 'success', 200);
             }
@@ -31,11 +40,14 @@ class CategoryController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function delete(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function delete(Request $request): JsonResponse
     {
         try {
-            $model = new Category();
-            $result = $model->deleteCategory($request);
+            $result = $this->model->deleteCategory($request);
             if ($result == 'true') {
                 return ApiResponse::Success(null, "Xóa danh mục thành công", 'success', 200);
             }
@@ -47,11 +59,14 @@ class CategoryController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function update(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function update(Request $request): JsonResponse
     {
         try {
-            $model = new Category();
-            $result = $model->updateCategory($request);
+            $result = $this->model->updateCategory($request);
             if ($result === 'success') {
                 return ApiResponse::Success(null, "Cập nhật danh mục thành công", 'success', 200);
             }
