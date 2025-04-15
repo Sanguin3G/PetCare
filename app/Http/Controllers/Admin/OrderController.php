@@ -5,24 +5,32 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use App\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class OrderController extends Controller
 {
+    protected $Order;
+    public function __construct(Order $order)
+    {
+        $this->Order = $order;
+    }
     public function index()
     {
-        $model = new Order();
-        $Order = $model->getListInforOfOrder();
+        $Order = $this->Order->getListInforOfOrder();
         return view('Admin.OrderView', ['Order' => $Order]);
     }
-    // get detail order
+    /**
+     * get detail order
+     * @param string $idOrder
+     * @return ApiResponse|view
+     */
     public function getDetailOrder(string $idOrder)
     {
         try {
-            $model = new Order();
-            $result = $model->detailOfOrder($idOrder);
+            $result = $this->Order->detailOfOrder($idOrder);
             if ($result) {
                 // return ApiResponse::Error($result, 'Success', 'success', 200);
                 return view('Admin.DetailOrderView', ['order' => $result]);
@@ -33,11 +41,15 @@ class OrderController extends Controller
             return ApiResponse::Error(null, 'Có lỗi xảy ra', 'error', 500);
         }
     }
-    public function delivery(string $id)
+    /**
+     * get detail order
+     * @param string $idOrder
+     * @return ApiResponse
+     */
+    public function delivery(string $id): JsonResponse
     {
         try {
-            $model = new Order();
-            $result = $model->deliveryOrder($id);
+            $result = $this->Order->deliveryOrder($id);
             if ($result) {
                 return ApiResponse::Success(null, 'Success', 'success', 200);
             }

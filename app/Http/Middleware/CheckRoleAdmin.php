@@ -2,11 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Responses\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class CheckRoleAdmin
 {
@@ -17,15 +19,14 @@ class CheckRoleAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check()) {
-            $user = User::find(Auth::guard('api')->user()->id)->first();
-            if ($user->role == 'admin') {
+        Log::error('middleware');
+        Log::info(Auth::user());
+        if (Auth::user()) {
+            if (Auth::user()->role === 'admin') {
                 return $next($request);
-            } else {
-                return redirect(route('admin.login'));
             }
-        } else {
-            return redirect(route('admin.login'));
+            return ApiResponse::Success(null, "You don't have authority", 'error', 200);
         }
+        return ApiResponse::Error(null, "Unauthorize", 'error', 200);
     }
 }

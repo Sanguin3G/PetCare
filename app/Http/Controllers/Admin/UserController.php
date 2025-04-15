@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Laravel\Passport\Passport;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
@@ -28,6 +29,11 @@ class UserController extends Controller
     public const MSG_CREATE_ACCOUNT_SUCCESS = "Tạo tài khoản thành công !";
     public const MSGG_CHANGE_PASSWORD_SUCCESS = "Đổi mật khẩu thành công !";
     public const MSG_SUCCESS = "Thành công";
+    protected $User;
+    public function __construct(User $user)
+    {
+        $this->User = $user;
+    }
     public function index()
     {
         $user = User::paginate(10);
@@ -37,11 +43,14 @@ class UserController extends Controller
     {
         return view('Admin.ProfileView');
     }
-    public function checkLogin(Request $request)
+    /**
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function checkLogin(Request $request): JsonResponse
     {
         try {
-            $user = new User();
-            $result = $user->checkLoginModel($request);
+            $result = $this->User->checkLoginModel($request);
             if ($result == 'Invalid') {
                 return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 400);
             }
@@ -57,12 +66,16 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    // send OTP code
-    public function sendOTPCreateAccountController(Request $request)
+
+    /**
+     * send OTP code
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function sendOTPCreateAccountController(Request $request): JsonResponse
     {
         try {
-            $model = new User();
-            $result = $model->sendOTPCreateAccountModel($request);
+            $result = $this->User->sendOTPCreateAccountModel($request);
             if ($result == 'Account has existed') {
                 return ApiResponse::Error(null, self::MSG_EMAIL_EXIST, 'error', 400);
             }
@@ -74,12 +87,16 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    // active account
-    public function createAccountController(Request $request)
+    /**
+     * active account
+     *
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function createAccountController(Request $request): JsonResponse
     {
         try {
-            $user = new User();
-            $result = $user->createAccountModel($request);
+            $result = $this->User->createAccountModel($request);
             if ($result === 'Active account successful') {
                 return ApiResponse::Success(null, self::MSG_CREATE_ACCOUNT_SUCCESS, 'success', 200);
             }
@@ -95,11 +112,16 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    public function changePass(Request $request)
+
+    /**
+     * 
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function changePass(Request $request): JsonResponse
     {
         try {
-            $user = new User();
-            $result = $user->updatePassword($request);
+            $result = $this->User->updatePassword($request);
             if ($result == 'Success') {
                 return ApiResponse::Success(null, self::MSGG_CHANGE_PASSWORD_SUCCESS, 'success', 200);
             }
@@ -115,12 +137,17 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    public function updateProfile(Request $request)
+
+    /**
+     * 
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function updateProfile(Request $request): JsonResponse
     {
 
         try {
-            $user = new User();
-            $result = $user->updateInforAdminModel($request);
+            $result = $this->User->updateInforAdminModel($request);
             if ($result == 'Success') {
                 return ApiResponse::Success(null, self::MSG_UPDATE_SUCCESS, 'success', 200);
             }
@@ -133,12 +160,17 @@ class UserController extends Controller
             return ApiResponse::Error(null, self::MSG_ERROR_ACCOUNT, 'error', 500);
         }
     }
-    public function getUserProfile(Request $request)
+
+    /**
+     * 
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function getUserProfile(Request $request): JsonResponse
     {
         try {
-            $user = new User();
-            $result = $user->getProfileModel($request);
-            if ($result == false) {
+            $result = $this->User->getProfileModel($request);
+            if ($result == 'error') {
                 return ApiResponse::Error(NULL, self::MSG_ERROR, 'error', 500);
             }
             if ($result == 'User Not Found') {
@@ -149,11 +181,16 @@ class UserController extends Controller
             return ApiResponse::Error(NULL, self::MSG_ERROR, 'error', 500);
         }
     }
-    public function Logout(Request $request)
+
+    /**
+     *
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function Logout(Request $request): JsonResponse
     {
         try {
-            $user = new User();
-            $result = $user->LogoutModel($request);
+            $result = $this->User->LogoutModel($request);
             if ($result == 'success') {
                 return ApiResponse::Success($result, 'Đăng xuất thành công', 'success', 200);
             }
@@ -164,15 +201,5 @@ class UserController extends Controller
         } catch (Throwable $e) {
             return ApiResponse::Error(null, self::MSG_ERROR, 'error', 500);
         }
-    }
-    public function destroy(string $id)
-    {
-        $user = User::find($id);
-        try {
-            $user->delete();
-        } catch (Throwable) {
-            return redirect(route('admin.manageAccount'))->with('error', 'Xóa tài khoản thất bại');
-        }
-        return redirect(route('admin.manageAccount'))->with('notice', 'Xóa tài khoản thành công');
     }
 }

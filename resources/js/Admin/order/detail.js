@@ -46,10 +46,10 @@ $(".btn-đelivery").on("click", function () {
                         icon: response.status,
                         position: "bottom-right",
                     });
-                    $(".btn-no-delivery").empty();
-                    $(".btn-no-delivery")
-                        .append(`<button style="font-size:2vw;font-size:2vh" class="btn btn-success btn-delivery-success">Đã giao
-                    hàng</button>`);
+                    const $row = $(`button[data-id='${id}']`).closest("tr");
+                    $row.find("td.btn-no-delivery").html(`
+            <button style="font-size:2vw;font-size:2vh" class="btn btn-success btn-delivery-success">Đã giao hàng</button>
+        `);
                     $(".loading-overlay").addClass("d-none");
                     return;
                 }

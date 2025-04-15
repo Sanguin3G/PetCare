@@ -40,7 +40,8 @@
                 <td><button style="font-size:2vw;font-size:2vh" class="btn btn-success btn-delivery-success">Đã giao
                     hàng</button> </td>
                 @else
-                <td class="btn-no-delivery"><button style="font-size:2vw;font-size:2vh" class="btn btn-danger">Chưa giao
+                <td class="btn-no-delivery" data-id="{{ $order->id }}"><button style="font-size:2vw;font-size:2vh"
+                    class="btn btn-danger">Chưa giao
                     hàng</button> </td>
                 @endif
 

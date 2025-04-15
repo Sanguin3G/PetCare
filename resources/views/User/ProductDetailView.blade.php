@@ -11,8 +11,9 @@
           <div style="max-width:140px;border-top:1px solid black;border-bottom:1px solid black"><img
               class="img-fluid p-2 list-img" src="{{ asset('assets/img-add-pro/' . $result->image) }}">
           </div>
+          @endforeach
         </div>
-        @endforeach
+
         <div class="product-detail d-flex justify-content-around">
           <div class="product-detail-img ms-2">
             {{-- Ảnh sản phẩm --}}
@@ -74,15 +75,16 @@
             <!-- Button trigger modal -->
             {{-- @if (!Auth::guard('customer')->check()) --}}
 
-              <button class="btn btn-danger mt-4" style="width:90px ;margin-left:10px;margin-bottom:20px" id="buttonAddToCart" data-id="{{ $product->idPro }}" data-name="{{ $product->namePro }}"
-                data-cost="{{ $product->cost }}" data-discount="{{ $product->discount }}"
-                data-image="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}"
-                style="text-decoration:none;color:white;font-size:2vw;font-size:2vh">
-                Mua
-              </button>
-              <button type="button" style="width:150px;margin-left:10px;margin-bottom:20px;font-size:2vw;font-size:2vh"
-                id="ButtonSoldOut" class="btn btn-danger mt-3 d-none">
-                Hàng tạm hết</button>
+            <button class="btn btn-danger mt-4" style="width:90px ;margin-left:10px;margin-bottom:20px"
+              id="buttonAddToCart" data-id="{{ $product->idPro }}" data-name="{{ $product->namePro }}"
+              data-cost="{{ $product->cost }}" data-discount="{{ $product->discount }}"
+              data-image="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}"
+              style="text-decoration:none;color:white;font-size:2vw;font-size:2vh">
+              Mua
+            </button>
+            <button type="button" style="width:150px;margin-left:10px;margin-bottom:20px;font-size:2vw;font-size:2vh"
+              id="ButtonSoldOut" class="btn btn-danger mt-3 d-none">
+              Hàng tạm hết</button>
           </div>
         </div>
       </div>

@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Events\CheckOutEvent;
+use App\Events\ForgetPassword;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Events\RegistAccount;
 use App\Listeners\CheckOutListener;
+use App\Listeners\ForgetPasswordListener;
 use App\Listeners\SendOTPConfirmToEmail;
 
 
@@ -33,6 +35,10 @@ class EventServiceProvider extends ServiceProvider
         Event::listen(
             CheckOutEvent::class,
             CheckOutListener::class
+        );
+        Event::listen(
+            ForgetPassword::class,
+            ForgetPasswordListener::class
         );
     }
 }

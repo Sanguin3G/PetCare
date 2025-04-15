@@ -32,20 +32,16 @@ class Cart extends Model
             $order->note = $request->Note;
             $order->thanhtoan = $paymentMethod;
             $order->created_at = now('Asia/Ho_Chi_Minh');
-            $totalCost = $request->Total;
-            //lấy idVoucher để truyền vào bảng order
             if ($request->IdVoucher && $request->IdVoucher > 0) {
                 $voucherUser = VoucherUser::find($request->input('idVoucher'));
                 $voucherId = $voucherUser->id_voucher;
                 $order->idVoucher = $voucherId;
-            } else {
+            }
+            if (!$request->IdVoucher && $request->IdVoucher <= 0) {
                 $order->idVoucher = null;
             }
-            //lưu
             $order->save();
             $idLatestOrder = $order->id;
-            //  $lastPro = product::latest()->first()->toArray();
-            //dd($idLatestOrder);
             foreach ($request->Cart as $product) {
                 $idPro = $product['idPro'];
                 // thêm dữ liệu vào bảng orderdetail

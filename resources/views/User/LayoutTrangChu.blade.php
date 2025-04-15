@@ -1,16 +1,3 @@
-<?php
-use Illuminate\Support\Facades\DB;
-use App\Models\product;
-use Illuminate\Support\Str;
-if (session('cart')) {
-    $total = 0;
-    foreach (session('cart') as $row) {
-        $total += 1;
-    }
-}
-$firstIdService = DB::table('services')->select('id')->first();
-$product = product::select()->get();
-?>
 <!DOCTYPE html>
 <html lang="en">
 

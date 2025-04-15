@@ -29,12 +29,15 @@ use App\Models\Product;
 use App\Models\Service;
 
 Route::prefix('auth')->group(function () {
+    Route::post('product/findBySearch', [ProductController::class, 'findProductByName']);
     Route::post('admin/login', [UserController::class, 'checkLogin']);
     Route::prefix('user')->group(function () {
         Route::get('account/regist', [CustomerController::class, 'RegistAccount']);
         Route::post('login', [UserController::class, 'checkLogin']);
         Route::post('register', [UserController::class, 'createAccountController']);
         Route::post('register/sendOTP', [UserController::class, 'sendOTPCreateAccountController']);
+        Route::post('account/forgetpass/request/sendOTP', [CustomerController::class, 'sendOTPForgetPassController']);
+        Route::post('account/forgetpass/request/resetPass', [CustomerController::class, 'resetPasswordController']);
     });
     Route::prefix('admin')->group(function () {
         Route::post('register', [UserController::class, 'createAccountController']);
@@ -50,22 +53,21 @@ Route::middleware('auth:api')->group(function () {
         Route::get('account/changepass/view', [CustomerController::class, 'GetChangePassView']);
         Route::patch('account/changepass', [CustomerController::class, 'changePass']);
     });
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('CheckRoleAdmin')->group(function () {
         Route::get('profile', [UserController::class, 'getUserProfile']);
         Route::post('logout', [UserController::class, 'Logout']);
-        //tạo mới nhân viên
+
         Route::post('createStaff', [StaffController::class, 'store']);
-        //tạo mới danh mục
         Route::post('category/create', [CategoryController::class, 'store']);
         Route::delete('category/delete', [CategoryController::class, 'delete']);
         Route::patch('category/update', [CategoryController::class, 'update']);
-        //sản phẩm
+        // product
         Route::get('product/get', [ProductController::class, 'indexAjax']);
         Route::post('product/create', [ProductController::class, 'store']);
         Route::delete('product/delete', [ProductController::class, 'delete']);
         Route::post('product/update/{id}', [ProductController::class, 'update']);
         Route::delete('product/image/delete', [ProductController::class, 'deleteImageProduct']);
-        // service
+
         Route::post('service/create', [ServiceController::class, 'store']);
         Route::post('service/update', [ServiceController::class, 'update']);
         //order
