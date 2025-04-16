@@ -96,27 +96,19 @@ class Product extends Model
             $product->idCat = (int)$request->danhmucAddpro;
             $product->save();
             // If request send file image, delete old image
-            if ($request->UpdateImage === 'true') {
-                $ListImageProduct = ImageProduct::where('idPro', $id)->select('idPro', 'image')->get();
-                foreach ($ListImageProduct as $row) {
-                    if (File::exists('assets/img-add-pro/' . $row->image)) {
-                        File::delete('assets/img-add-pro/' . $row->image);
-                    }
-                }
-                ImageProduct::where('idPro', $id)->delete();
+            if ($request->UpdateImage === 'true' && $request->file('imagepro')) {
+                $files = $request->file('imagepro');
                 $indexImg = 0;
-                if ($files = $request->file('imagepro')) {
-                    foreach ($files as $value) {
-                        $indexImg++;
-                        $extension = $value->getClientOriginalExtension(); //lay tep mo rong cua file
-                        $filename =    $indexImg . time() . '.' . $extension;
-                        $value->move('assets/img-add-pro/', $filename);
-                        $imageProduct = ImageProduct::create([
-                            'idPro' => $product->idPro,
-                            'image' => $filename
-                        ]);
-                        $imageProduct->save();
-                    }
+                foreach ($files as $value) {
+                    $indexImg++;
+                    $extension = $value->getClientOriginalExtension(); //get extension of file
+                    $filename =    $indexImg . time() . '.' . $extension;
+                    $value->move('assets/img-add-pro/', $filename);
+                    $imageProduct = ImageProduct::create([
+                        'idPro' => $product->idPro,
+                        'image' => $filename
+                    ]);
+                    $imageProduct->save();
                 }
             }
             DB::commit();

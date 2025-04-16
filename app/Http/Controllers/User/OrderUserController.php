@@ -21,6 +21,6 @@ class OrderUserController extends Controller
         $Order = $model->getListOrderUser($idCus);
         return view('User.OrderView', ['Order' => $Order]);
         // return new OrderUserCollection(($Order));
-        // return response()->json($Order);
+        // return response()->json($Order[0]->OrderDetail[0]->ProductDetail->ImageProduct[0]->image);
     }
 }

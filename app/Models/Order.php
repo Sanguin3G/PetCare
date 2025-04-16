@@ -75,7 +75,7 @@ class Order extends Model
     {
         try {
             $product = Product::find($id);
-            return $product->discount;
+            return $product->discount ?? null;
         } catch (Throwable $e) {
             Log::error($e);
             return null;

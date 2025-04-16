@@ -1,3 +1,9 @@
+<?php
+use Illuminate\Support\Facades\DB;
+use App\Models\product;
+use Illuminate\Support\Str;
+$product = product::select()->get();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
