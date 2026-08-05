@@ -151,7 +151,7 @@
         </div>
         <div class="footer">
             <p>Nếu bạn có bất kỳ câu hỏi nào, hãy liên hệ với chúng tôi qua email
-                <strong>namn3102003@gmail.com</strong>.
+                <strong>petcare@gmail.com</strong>.
             </p>
         </div>
     </div>

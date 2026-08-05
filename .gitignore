@@ -6,13 +6,10 @@
 /storage/*.key
 /vendor
 .env
-.env.backup
-.env.production
-.env.example
+.env.*
+!.env.example
 .docker-compose.yaml
 /docker
-package-lock.json
-package.json
 Homestead.json
 Homestead.yaml
 auth.json
