@@ -72,7 +72,7 @@
             </form>
         </div>
     </div>
-    @vite('resources/js/admin/product/changeProduct.js')
+    @vite('resources/js/Admin/product/changeProduct.js')
     <script src="{{ asset('assets/js/ckeditor/ckeditor.js') }}"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/31.0.0/classic/translations/vi.js"></script>
     <style>

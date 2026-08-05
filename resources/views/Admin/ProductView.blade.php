@@ -113,7 +113,7 @@
             <div class="spinner"></div>
         </div>
     </div>
-    @vite('resources/js/admin/product/delete.js')
-    @vite('resources/js/admin/product/get.js')
-    @vite('resources/js/admin/product/productView.js')
+@vite('resources/js/Admin/product/delete.js')
+@vite('resources/js/Admin/product/get.js')
+@vite('resources/js/Admin/product/productView.js')
 @endsection

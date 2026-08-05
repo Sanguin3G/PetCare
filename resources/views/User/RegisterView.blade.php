@@ -21,7 +21,7 @@
         https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
         "
         rel="stylesheet">
-    @vite('resources/js/user/account/create.js')
+    @vite('resources/js/User/account/create.js')
 </head>
 
 <body>
