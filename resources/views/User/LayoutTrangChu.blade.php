@@ -77,7 +77,7 @@ $product = product::select()->get();
         {{-- <div class="d-flex justify-content-center mt-2" class="collapse-down">
             <i class="fa-solid fa-angle-down fa-xl"></i>
         </div> --}}
-        <div class="row navbar navbar-dark bg-white shadow navbarSlideToggle pc-main-nav">
+        <div class="row navbar navbar-dark bg-white shadow navbarSlideToggle pc-main-nav" id="petcare-main-nav">
             <nav class="navbar navbar-expand-xl d-flex flex-column">
                 <div class="container-fluid d-flex justify-content-around">
                     <div class="nav-brand ps-2 text-center d-flex align-items-center flex-wrap pc-brand">
@@ -169,7 +169,10 @@ $product = product::select()->get();
                     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
                         aria-labelledby="offcanvasNavbarLabel">
                         <div class="offcanvas-header">
-
+                            <div>
+                                <span class="pc-section-kicker"><i class="fa-solid fa-paw" aria-hidden="true"></i> PetCare</span>
+                                <h5 class="offcanvas-title mt-1" id="offcanvasNavbarLabel">Đi đâu hôm nay?</h5>
+                            </div>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
                                 aria-label="Close"></button>
                         </div>
@@ -208,6 +211,7 @@ $product = product::select()->get();
                                         </i>
                                     </a>
                                 </li>
+                            </ul>
                         </div>
                     </div>
 
@@ -215,7 +219,10 @@ $product = product::select()->get();
             </nav>
         </div>
         <div class="d-flex justify-content-center mt-2">
-            <button class="btn btn-secondary" id="collapseButton"><i class="fa-solid fa-angle-down fa-xl"></i></button>
+            <button class="btn btn-secondary" id="collapseButton" type="button" aria-controls="petcare-main-nav"
+                aria-expanded="true" aria-label="Thu gọn menu" title="Thu gọn menu">
+                <i class="fa-solid fa-angle-up fa-xl" aria-hidden="true"></i>
+            </button>
         </div>
         <div>
             <div class="row my-2" style="overflow-y:hidden">
@@ -264,9 +271,24 @@ $product = product::select()->get();
         $(function() {
             $(".collapse-down").hide();
 
+            const $mainNav = $("#petcare-main-nav");
+            const $collapseButton = $("#collapseButton");
+
+            function updateCollapseButton() {
+                const isExpanded = $mainNav.is(":visible");
+                const $icon = $collapseButton.find("i");
+                $icon.toggleClass("fa-angle-up", isExpanded).toggleClass("fa-angle-down", !isExpanded);
+                $collapseButton.attr({
+                    "aria-expanded": String(isExpanded),
+                    "aria-label": isExpanded ? "Thu gọn menu" : "Mở rộng menu",
+                    title: isExpanded ? "Thu gọn menu" : "Mở rộng menu",
+                });
+            }
+
             $("#collapseButton").on("click", function() {
-                $(".navbarSlideToggle").slideToggle(180);
+                $mainNav.stop(true, true).slideToggle(180, updateCollapseButton);
             });
+            updateCollapseButton();
 
             function filterProducts(inputSelector, itemSelector, nameSelector, listSelector) {
                 const query = $(inputSelector).val().trim().toLowerCase();

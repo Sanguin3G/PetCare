@@ -47,10 +47,17 @@ class PetCareTest extends TestCase
     public function test_public_pages_expose_the_petcare_theme_switcher(): void
     {
         foreach (['/', '/about', '/login', '/register', '/forgetPass'] as $url) {
-            $this->get($url)
+            $response = $this->get($url)
                 ->assertOk()
                 ->assertSee('data-theme-choice="dark"', false)
                 ->assertSee('/build/assets/petcare-', false);
+
+            if ($url === '/') {
+                $response
+                    ->assertSee('id="offcanvasNavbar"', false)
+                    ->assertSee('aria-controls="petcare-main-nav"', false)
+                    ->assertSee('fa-angle-up', false);
+            }
         }
     }
 }

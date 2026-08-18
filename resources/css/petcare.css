@@ -121,8 +121,29 @@ body.pc-auth a:hover { color: var(--pc-secondary-strong); }
 #collapseButton:focus,
 #pc-scroll-top:focus { box-shadow: 0 0 0 0.22rem var(--pc-focus) !important; }
 html[data-theme="dark"] .pc-main-nav .navbar-toggler-icon { filter: invert(1) brightness(1.8); }
-.pc-main-nav .offcanvas { background: var(--pc-surface); color: var(--pc-text); }
+.pc-main-nav .offcanvas {
+    z-index: 1045;
+    width: min(88vw, 360px);
+    background: var(--pc-surface);
+    color: var(--pc-text);
+}
 .pc-main-nav .offcanvas-header { border-bottom: 1px solid var(--pc-border); }
+.pc-main-nav .offcanvas-title { color: var(--pc-text); font-weight: 850; letter-spacing: -0.03em; }
+.pc-main-nav .offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.25rem;
+    overflow-y: auto;
+}
+.pc-main-nav .offcanvas-body .navbar-nav {
+    display: flex !important;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.pc-main-nav .offcanvas-body .nav-item { width: 100%; margin-right: 0 !important; }
+.pc-main-nav .offcanvas-body .nav-link { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 html[data-theme="dark"] .pc-main-nav .offcanvas .btn-close { filter: invert(1) brightness(1.8); }
 .pc-main-nav .nav-link {
     color: var(--pc-muted) !important;
