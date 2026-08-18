@@ -1,8 +1,8 @@
-# PetCare Laravel Practice
+# PetCare
 
-PetCare is a Laravel practice project for a pet-care business. It combines an online product catalogue with service bookings, customer accounts, order management, and an administration area.
+PetCare is a Laravel application for a pet-care business. It combines an online product catalogue with service bookings, customer accounts, order management, and an administration area.
 
-This repository is a learning/demo project and is not intended to be used as-is in production.
+This repository is maintained by [Sanguin3G](https://github.com/Sanguin3G).
 
 ## What is included
 
@@ -35,8 +35,8 @@ This repository is a learning/demo project and is not intended to be used as-is 
 ### Installation
 
 ```bash
-git clone https://github.com/Sanguine3/petcare-laravel-pratice.git
-cd petcare-laravel-pratice
+git clone https://github.com/Sanguin3G/PetCare.git
+cd PetCare
 
 composer install
 copy .env.example .env        # Windows
@@ -55,7 +55,7 @@ The application is then available at `http://localhost:8000`.
 
 ## Configuration
 
-The default `.env.example` uses SQLite and log-based mail, which is suitable for local practice. Update the following values when testing integrations:
+The default `.env.example` uses SQLite and log-based mail, which is suitable for local development. Update the following values when testing integrations:
 
 - Database connection and credentials
 - Mail transport and sender address

@@ -22,7 +22,6 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\User\OrderUserController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CustomerController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\ProductUserController;
 use App\Models\Category;
 use App\Models\Product;

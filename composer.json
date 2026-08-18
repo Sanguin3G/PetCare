@@ -1,10 +1,16 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "sanguine3/petcare-laravel-practice",
+    "name": "sanguin3g/petcare",
     "type": "project",
-    "description": "A Laravel practice project for a pet-care marketplace and service platform.",
+    "description": "PetCare, a pet-care marketplace and service platform.",
     "keywords": ["laravel", "petcare", "ecommerce", "booking", "api"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Sanguin3G",
+            "homepage": "https://github.com/Sanguin3G"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.9",

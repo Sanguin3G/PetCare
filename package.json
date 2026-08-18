@@ -1,7 +1,11 @@
 {
-    "name": "petcare-laravel",
+    "name": "petcare",
     "private": true,
     "type": "module",
+    "author": {
+        "name": "Sanguin3G",
+        "url": "https://github.com/Sanguin3G"
+    },
     "scripts": {
         "build": "vite build",
         "dev": "vite"
