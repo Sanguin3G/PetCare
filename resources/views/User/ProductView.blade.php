@@ -12,7 +12,7 @@
     }
 </style>
 <?php use Illuminate\Support\Str; ?>
-<div class="productViewUser" style="min-height: 900px">
+<div class="productViewUser pc-product-page" style="min-height: 900px">
     <!-- Danh mục sản phẩm-->
     <div class="container-fluid">
         <div class="SmallCategory">
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="d-flex">
-            <div class="MenuCat">
+            <div class="MenuCat pc-category-panel">
                 {{-- <a href="{{ route('user.destroyCart') }}">click</a> --}}
                 <h3 class="text-center mb-2" style="font-size:2vh 2vw">Danh mục sản phẩm</h3>
                 <ul class="category list-group">
@@ -46,8 +46,8 @@
                     @endforeach
                 </ul>
             </div>
-            <div class="ProList ms-3">
-                <nav class="navbar mb-3 navbar-light bg-light justify-content-between">
+            <div class="ProList ms-3 pc-product-results">
+                <nav class="navbar mb-3 navbar-light bg-light justify-content-between pc-product-toolbar">
                     {{-- <h3 style="color:black">
                         @foreach ($categoryName as $name)
                         {{ $name->name }}
@@ -56,7 +56,7 @@
                     </h3> --}}
                     {{-- button tìm kiếm --}}
                     <form class="form-inline d-flex me-3">
-                        <input class="form-control mr-sm-2" type="text" id="nameProductSearch" placeholder="Search"
+                        <input class="form-control mr-sm-2" type="search" id="nameProductSearch" placeholder="Tìm trong danh mục"
                             aria-label="Search">
                         <button class="btn btn-outline-success my-2 my-sm-0 ml-3" id="buttonSearch" type="button"><i
                                 class="fa-solid fa-magnifying-glass"></i></button>
@@ -93,7 +93,7 @@
                         <!-- Lấy dữ liệu từ bảng product để xuất ra sản phẩm -->
                         @foreach ($products as $product)
                         {{-- Thông tin sản phẩm --}}
-                        <div id="product-infor" class="card position-relative" style="max-width:15rem;height:27rem"
+                        <div id="product-infor" class="card position-relative pc-product-card" style="max-width:15rem;height:27rem"
                             style="border:0px">
                             {{-- giảm giá sản phẩm --}}
                             @if ($product->discount > 0)
@@ -111,7 +111,7 @@
                                     href="{{ route('user.productDetail', ['id' => $product->idPro, 'name' => $nameProduct]) }}">
                                     <img class="card-img-top img-fluid p-2" style="max-height:20rem"
                                         src="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}"
-                                        alt="Card image cap"></a>
+                                        alt="{{ $product->namePro }}" loading="lazy"></a>
                             </div>
                             <div class="card-body" id="card-body">
                                 <h6 id="name-product" class="card-title">

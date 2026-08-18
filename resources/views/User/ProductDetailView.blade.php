@@ -1,7 +1,7 @@
 @extends('User.LayoutTrangChu')
 @section('content')
 <!-- Danh mục sản phẩm-->
-<div class="container-fluid pdt productDetail">
+<div class="container-fluid pdt productDetail pc-product-detail">
   <div class="row a ">
     <div>
       <div class="d-flex">
@@ -9,7 +9,7 @@
         <div class="img-slide mt-3" style="max-height:550px;max-width:200px;overflow:hidden">
           @foreach ($product->ImageProduct as $result)
           <div style="max-width:140px;border-top:1px solid black;border-bottom:1px solid black"><img
-              class="img-fluid p-2 list-img" src="{{ asset('assets/img-add-pro/' . $result->image) }}">
+              class="img-fluid p-2 list-img" src="{{ asset('assets/img-add-pro/' . $result->image) }}" alt="{{ $product->namePro }}" loading="lazy">
           </div>
           @endforeach
         </div>
@@ -19,12 +19,12 @@
             {{-- Ảnh sản phẩm --}}
             <img class="img-float main-img-product" id="main-img-product"
               style="max-width:800px;max-height:600px;border:1px solid  #EA9E1E;border-radius:5px"
-              src="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}">
+              src="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}" alt="{{ $product->namePro }}">
 
             <div class="img-slide-small ms-2" style="max-width:140px">
               @foreach ($product->ImageProduct as $result)
               <div style="max-width:140px"><img class="img-fluid p-2 list-img"
-                  src="{{ asset('assets/img-add-pro/' . $result->image) }}"></div>
+                  src="{{ asset('assets/img-add-pro/' . $result->image) }}" alt="{{ $product->namePro }}" loading="lazy"></div>
               @endforeach
             </div>
           </div>
@@ -138,7 +138,7 @@
                 href="{{ route('user.productDetail', ['id' => $product->idPro, 'name' => $nameProduct]) }}">
                 <img class="card-img-top img-fluid p-2" style="max-height:20rem"
                   src="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}"
-                  alt="Card image cap"></a>
+                  alt="{{ $product->namePro }}" loading="lazy"></a>
             </div>
             <div class="card-body" id="card-body">
               <h6 id="name-product" class="card-title">

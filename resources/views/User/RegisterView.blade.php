@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" data-theme="light" data-theme-preference="system">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pet Care</title>
+    <title>Đăng ký | PetCare</title>
+    <script>
+        (() => {
+            try {
+                const preference = localStorage.getItem('petcare-theme') || 'system';
+                document.documentElement.dataset.themePreference = preference;
+                document.documentElement.dataset.theme = preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : preference === 'system' ? 'light' : preference;
+            } catch (error) {}
+        })();
+    </script>
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/PetCARE.png') }}">
       <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -21,16 +30,19 @@
         https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
         "
         rel="stylesheet">
-    @vite('resources/js/User/account/create.js')
+    @vite(['resources/css/petcare.css', 'resources/js/User/theme.js', 'resources/js/User/account/create.js'])
 </head>
 
-<body>
+<body class="pc-auth">
+    <div class="pc-auth-theme">
+        @include('User.partials.theme-toggle')
+    </div>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="row border rounded-5 p-3 bg-white shadow box-area">
             <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
                 style="background:  #FFE4DA;">
                 <div class="featured-image mb-3">
-                    <img src="{{ asset('assets/img/PetCARE.png') }}" class="img-fluid mt-3" style="width:100%">
+                        <img src="{{ asset('assets/img/PetCARE.png') }}" class="img-fluid mt-3" style="width:100%" alt="PetCare">
                 </div>
             </div>
             <div class="col-md-6 right-box">

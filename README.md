@@ -53,6 +53,12 @@ php artisan serve
 
 The application is then available at `http://localhost:8000`.
 
+### Frontend and demo catalog
+
+The customer-facing pages keep the original Bootstrap/Slick structure but use a shared PetCare theme: warm coral for care and action, balanced with a calm sage-teal accent. The theme menu supports `System`, `Light`, and `Dark` modes and remembers the choice in the browser under `petcare-theme`.
+
+`php artisan migrate --seed` creates six pet-care categories and twelve varied Vietnamese demo products. Each seeded product points to an image already stored in `public/assets/img-add-pro`, so the catalogue is immediately usable without downloading external product media.
+
 ## Configuration
 
 The default `.env.example` uses SQLite and log-based mail, which is suitable for local development. Update the following values when testing integrations:

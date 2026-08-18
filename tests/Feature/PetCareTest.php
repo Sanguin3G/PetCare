@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\ImageProduct;
 use App\Models\Product;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -29,5 +31,26 @@ class PetCareTest extends TestCase
         Product::factory()->create(['idCat' => $category->idCat]);
 
         $this->get('/')->assertOk();
+    }
+
+    public function test_the_demo_seed_contains_varied_petcare_catalog_data(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $this->assertSame(6, Category::count());
+        $this->assertSame(12, Product::count());
+        $this->assertSame(12, ImageProduct::count());
+        $this->assertGreaterThan(1, Product::query()->distinct('idCat')->count('idCat'));
+        $this->assertGreaterThan(1, Product::query()->distinct('discount')->count('discount'));
+    }
+
+    public function test_public_pages_expose_the_petcare_theme_switcher(): void
+    {
+        foreach (['/', '/about', '/login', '/register', '/forgetPass'] as $url) {
+            $this->get($url)
+                ->assertOk()
+                ->assertSee('data-theme-choice="dark"', false)
+                ->assertSee('/build/assets/petcare-', false);
+        }
     }
 }

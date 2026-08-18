@@ -20,15 +20,23 @@ class ProductFactory extends Factory
     {
         return [
             // 'idPro' không cần định nghĩa vì đã được tạo trong boot()
-            'namePro' => $this->faker->words(3, true), // Tạo tên sản phẩm (3 từ)
-            'description' => $this->faker->paragraph(), // Tạo đoạn mô tả ngẫu nhiên
-            'count' => $this->faker->numberBetween(1, 100), // Số lượng từ 1 đến 100
-            'hot' => $this->faker->boolean(20), // 20% cơ hội là 1 (nổi bật), 80% là 0
-            'cost' => $this->faker->numberBetween(10000, 1000000), // Giá từ 10,000 đến 1,000,000 VND
-            'discount' => $this->faker->numberBetween(0, 50), // Giảm giá từ 0% đến 50%
-            'idCat' => 1, // Giả sử có 5 danh mục (1-5)
-            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'), // Thời gian tạo trong 1 năm qua
-            'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'), // Thời gian cập nhật
+            'namePro' => $this->faker->randomElement([
+                'Bánh thưởng thịt gà cho chó',
+                'Cát mèo khử mùi dịu nhẹ',
+                'Đồ chơi dây thừng bện chắc',
+                'Sữa tắm yến mạch cho thú cưng',
+            ]),
+            'description' => $this->faker->randomElement([
+                'Sản phẩm tiện dụng, dễ dùng và được chọn để chăm sóc thú cưng mỗi ngày.',
+                'Công thức dịu nhẹ, phù hợp cho những buổi chăm sóc tại nhà thật thoải mái.',
+            ]),
+            'count' => $this->faker->numberBetween(5, 60),
+            'hot' => $this->faker->boolean(25),
+            'cost' => $this->faker->numberBetween(49000, 650000),
+            'discount' => $this->faker->randomElement([0, 0, 10, 15, 20]),
+            'idCat' => 1,
+            'created_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
+            'updated_at' => $this->faker->dateTimeBetween('-6 months', 'now'),
         ];
     }
 }

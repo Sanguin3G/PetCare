@@ -6,6 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/petcare.css',
                 'resources/js/app.js',
                 'resources/js/Admin/LayoutAdmin.js',
                 'resources/js/Admin/account/LoginAdmin.js',
@@ -22,6 +23,7 @@ export default defineConfig({
                 'resources/js/Admin/product/get.js',
                 'resources/js/Admin/product/productView.js',
                 'resources/js/User/Layout.js',
+                'resources/js/User/theme.js',
                 'resources/js/User/account/changepass.js',
                 'resources/js/User/account/create.js',
                 'resources/js/User/account/forgetpass.js',

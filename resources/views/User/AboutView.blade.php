@@ -1,13 +1,14 @@
 @extends('User.LayoutTrangChu')
 @section('content')
-<div class="contentabout">
-  <div class="service text-center text-capitalize">
-    <h3 id="aboutText">GIỚI THIỆU</h3>
+<div class="contentabout pc-about">
+  <div class="service text-center text-capitalize pc-about-intro">
+    <span class="pc-section-kicker"><i class="fa-solid fa-paw" aria-hidden="true"></i> Câu chuyện PetCare</span>
+    <h1 id="aboutText">Chăm tốt hơn, vui lâu hơn</h1>
     <i class="fa-solid fa-heart"></i>
     <p>PET LIKE US AND SO WILL YOU</p>
 
   </div>
-  <div class="about container d-flex justify-content-around mt-3">
+  <div class="about container d-flex justify-content-around mt-3 pc-about-card">
     <div class="about-left d-flex flex-column justify-content-between">
       <div class="about-left-1 text-right">
         <span>
@@ -31,7 +32,7 @@
       </div>
     </div>
     <div>
-      <span><img class="img-fluid rounded-circle" src="{{ asset('assets/img/img-about.jpg') }}"></span>
+      <span class="pc-about-visual"><img class="img-fluid rounded-circle" src="{{ asset('assets/img/img-about.jpg') }}" alt="Một chú thú cưng được chăm sóc tại PetCare"></span>
     </div>
     <div class="about-right d-flex flex-column justify-content-between ms-3">
       <div class="about-right-1 text-left">
@@ -57,9 +58,9 @@
   </div>
 
   <div class="mt-5 container">
-    <iframe
+    <iframe title="Vị trí PetCare trên bản đồ"
       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.122426224508!2d105.79755507486252!3d21.02778688062129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab438eec0343%3A0xb8e48975c13d48!2zNy8xNDEgTmcuIDExOTQgxJAuIEzDoW5nLCBMw6FuZyBUaMaw4bujbmcsIMSQ4buRbmcgxJBhLCBIw6AgTuG7mWkgMTE3MDAwLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1718264171983!5m2!1svi!2s"
-      width="100%" height="450" style="border:0;" allowfullscreen=""></iframe>
+      width="100%" height="450" style="border:0;" loading="lazy" allowfullscreen=""></iframe>
   </div>
 </div>
 

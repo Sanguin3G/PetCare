@@ -5,13 +5,25 @@ use Illuminate\Support\Str;
 $product = product::select()->get();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" data-theme="light" data-theme-preference="system">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pet Care</title>
+    <title>PetCare | Chăm sóc thú cưng mỗi ngày</title>
+    <script>
+        (() => {
+            try {
+                const preference = localStorage.getItem('petcare-theme') || 'system';
+                const resolved = preference === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : preference;
+                document.documentElement.dataset.themePreference = preference;
+                document.documentElement.dataset.theme = resolved;
+            } catch (error) {}
+        })();
+    </script>
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/PetCARE.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/user-responsive.css') }}">
@@ -30,13 +42,14 @@ $product = product::select()->get();
     {{--
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"> --}}
     <script src="{{ asset('assets/slick-carousel/slick/slick.min.js') }}"></script>
-    @vite('resources/js/User/Layout.js')
+    @vite(['resources/css/petcare.css', 'resources/js/User/theme.js', 'resources/js/User/Layout.js'])
 </head>
 
-<body>
+<body class="pc-site">
+    <a class="pc-skip-link" href="#main-content">Bỏ qua đến nội dung</a>
     <!--Header -->
     <div class="header container-fluid mb-3 fixed-top">
-        <div class="d-flex justify-content-between bg-dark py-2 px-lg-5 flex-wrap text-center align-items-center">
+        <div class="pc-topbar d-flex justify-content-between py-2 px-lg-5 flex-wrap text-center align-items-center">
             <div class="text-left mb-2 mb-lg-0 d-inline-flex">
                 <a class="text-white px-3" href="">
                     <i class="fab fa-facebook-f"></i>
@@ -64,12 +77,12 @@ $product = product::select()->get();
         {{-- <div class="d-flex justify-content-center mt-2" class="collapse-down">
             <i class="fa-solid fa-angle-down fa-xl"></i>
         </div> --}}
-        <div class="row navbar navbar-dark bg-white shadow navbarSlideToggle">
+        <div class="row navbar navbar-dark bg-white shadow navbarSlideToggle pc-main-nav">
             <nav class="navbar navbar-expand-xl d-flex flex-column">
                 <div class="container-fluid d-flex justify-content-around">
-                    <div class="nav-brand ps-2 text-center d-flex align-items-center flex-wrap" style="">
-                        <img class="img-fluid" style="width:80px" src="{{ asset('assets/img/PetCARE.png') }}">
-                        <a class="navbar-brand mx-0" href="{{ route('user.home') }}" style="color: #F7A98F">PetCare</a>
+                    <div class="nav-brand ps-2 text-center d-flex align-items-center flex-wrap pc-brand">
+                        <img class="img-fluid" src="{{ asset('assets/img/PetCARE.png') }}" alt="PetCare">
+                        <a class="navbar-brand mx-0" href="{{ route('user.home') }}">PetCare</a>
                     </div>
                     <div>
                         <button class="navbar-toggler mt-2" type="button" data-bs-toggle="offcanvas"
@@ -85,9 +98,13 @@ $product = product::select()->get();
                         </button>
                     </div>
                     {{-- search --}}
-                    <div id="InputContainer" style="width:40%;position: relative;left:-8%">
+                    <div id="InputContainer" class="pc-search-desktop" style="width:40%;position: relative;left:-8%">
                         <div class="InputContainer">
-                            <input placeholder="Search.." id="input" class="input" name="text" type="text">
+                            <i class="fa-solid fa-magnifying-glass pc-search-icon" aria-hidden="true"></i>
+                            <input placeholder="Tìm món ngon, đồ chơi, phụ kiện..." id="input" class="input" name="text" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
+                            <button type="button" class="pc-search-clear" data-search-clear="input" aria-label="Xóa tìm kiếm">
+                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                            </button>
                         </div>
                         <div style="position: absolute;z-index:1">
                             <div id="list-search-product" class="d-flex mt-1 flex-wrap bg-white"
@@ -113,6 +130,7 @@ $product = product::select()->get();
                         </div>
                     </div>
                     <div class="buttonInforUser">
+                        @include('User.partials.theme-toggle')
                         {{-- @if (!Auth::guard('customer')->check()) --}}
                         <a style="text-decoration:none;color:black;font-size: 1.3vw"
                             class="me-2 ms-2 buttonLogin d-none" href="{{ route('user.login') }}">Đăng
@@ -214,7 +232,7 @@ $product = product::select()->get();
             </div>
         </div>
         <div class="d-flex justify-content-center">
-            <div id="list-search-product2" class="d-flex mt-1 flex-wrap bg-white"
+                <div id="list-search-product2" class="d-flex mt-1 flex-wrap bg-white" role="listbox"
                 style="overflow-y:visible;overflow-x:hidden;max-height:300px;max-width:400px">
                 @foreach ($product as $row)
                 <div class="listPro bg-white" style="display:none">
@@ -226,7 +244,7 @@ $product = product::select()->get();
                         <a style="text-decoration:none"
                             href="{{ route('user.productDetail', ['id' => $row->idPro, 'name' => $nameProduct]) }}">
                             <img src="{{ asset('assets/img-add-pro/' . $row->getImgProduct($row->idPro)) }}"
-                                class="img-fluid" style="max-width:100px;height:100%"></a>
+                                class="img-fluid" style="max-width:100px;height:100%" alt="{{ $row->namePro }}"></a>
                         <p id="product-name-search" class="ms-2" style="width:100%;font-size:1.2vw;font-size:1.2vh">
                             {{ $row->namePro }}
                         </p>
@@ -236,50 +254,59 @@ $product = product::select()->get();
             </div>
         </div>
     </div>
-    <div class="content">
-        @yield('content');
-    </div>
+    <main class="content" id="main-content">
+        @yield('content')
+    </main>
+    <button type="button" id="pc-scroll-top" aria-label="Về đầu trang" title="Về đầu trang">
+        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+    </button>
     <script>
-        //searchProduct
-        $(document).ready(function() {
+        $(function() {
             $(".collapse-down").hide();
-            $("#collapseButton").click(function() {
-                $(".navbarSlideToggle").slideToggle();
-            })
-            $("#search_pro").click(function() {
-                $(".listPro").toggle();
-                $(document).click(function() {
-                    $("#list-search-product2").toggle();
-                })
-            })
-            $("#input").click(function() {
-                $(".listPro2").toggle();
-            })
-            $("#input").on("keyup", function() {
-                var q = $("#input").val();
-                // var product = document.querySelectorAll("#product-name-search");
-                var productName = document.querySelectorAll("#product-name-search1");
-                //console.log(productName);
-                productName.forEach((a) => {
-                    $(a).parent().filter(function() {
-                        var b = $(a).text();
-                        $(a).parent().parent().toggle($(a).text().toLowerCase().indexOf(q) >
-                            -1)
-                    });
-                })
+
+            $("#collapseButton").on("click", function() {
+                $(".navbarSlideToggle").slideToggle(180);
             });
-            $("#search_pro").on("keyup", function() {
-                var q = $("#search_pro").val();
-                // var product = document.querySelectorAll("#product-name-search");
-                var productName = document.querySelectorAll("#product-name-search");
-                //console.log(productName);
-                productName.forEach((a) => {
-                    $(a).parent().filter(function() {
-                        var b = $(a).text();
-                        $(a).parent().parent().toggle($(a).text().toLowerCase().indexOf(q) >
-                            -1)
-                    });
-                })
+
+            function filterProducts(inputSelector, itemSelector, nameSelector, listSelector) {
+                const query = $(inputSelector).val().trim().toLowerCase();
+                let matches = 0;
+
+                $(itemSelector).each(function() {
+                    const name = $(this).find(nameSelector).text().trim().toLowerCase();
+                    const visible = !query || name.includes(query);
+                    $(this).toggle(visible);
+                    if (visible) matches++;
+                });
+
+                $(listSelector).toggle(Boolean(query) || document.activeElement === $(inputSelector)[0]);
+                $(inputSelector).siblings(".pc-search-clear").toggleClass("is-visible", Boolean(query));
+                $(inputSelector).attr("aria-expanded", String(Boolean(query) || matches > 0));
+            }
+
+            $("#input").on("focus input", function() {
+                filterProducts("#input", ".listPro2", "#product-name-search1", "#list-search-product");
+            });
+            $("#search_pro").on("focus input", function() {
+                filterProducts("#search_pro", ".listPro", "#product-name-search", "#list-search-product2");
+            });
+
+            $("[data-search-clear]").on("click", function() {
+                const input = $(this).data("search-clear");
+                $("#" + input).val("").trigger("input").focus();
+            });
+
+            $(document).on("click", function(event) {
+                if (!$(event.target).closest("#InputContainer, #list-search-product, #collapseExample, #list-search-product2, #search_pro").length) {
+                    $("#list-search-product, #list-search-product2").hide();
+                }
+            });
+
+            $(window).on("scroll", function() {
+                $("#pc-scroll-top").toggleClass("is-visible", window.scrollY > 360);
+            });
+            $("#pc-scroll-top").on("click", function() {
+                window.scrollTo({ top: 0, behavior: "smooth" });
             });
         });
     </script>
@@ -309,39 +336,36 @@ $product = product::select()->get();
             z-index: 9999;
         }
     </style>
-    <div class="container-fluid d-flex justify-content-around flex-wrap bg-dark mt-5">
+    <footer class="pc-footer container-fluid d-flex justify-content-around flex-wrap bg-dark mt-5">
         <div class="footer1 d-flex align-items-center flex-column p-3">
-            <h1 class="mb-3 mt-4  text-capitalize" style="color:#F7A98F;font-size:4vw">PetCare</h1>
-            <p class="text-white" style="font-size: 1.2vw">Giờ hoạt động: 8AM-10PM</p>
+            <h1 class="mb-3 mt-4 text-capitalize">PetCare</h1>
+            <p>Chăm kỹ từng ngày, vui khỏe dài lâu.</p>
+            <p>Giờ hoạt động: 8:00 – 22:00</p>
         </div>
         <div class="footer2 mt-3 text-white d-flex flex-column justify-content-between p-3">
-            <h3 style="font-size: 2vw">Liên hệ</h3>
+            <h3>Liên hệ</h3>
             <span>
-                <h6><i class="fa-solid fa-envelope-circle-check fa-lg me-3"
-                        style="color: #ffffff;font-size:2vw"></i>petcare@gmail.com
+                <h6><i class="fa-solid fa-envelope-circle-check fa-lg me-3"></i>petcare@gmail.com
                 </h6>
             </span>
             <span>
-                <h6><i class="fa-solid fa-phone fa-lg me-4" style="color: #ffffff;font-size:2vw"></i>0912345678</h6>
+                <h6><i class="fa-solid fa-phone fa-lg me-4"></i>0912345678</h6>
             </span>
             <span>
-                <h6><i class="fa-solid fa-location-dot fa-lg me-4" style="color: #ffffff;font-size:2vw"></i>Láng
+                <h6><i class="fa-solid fa-location-dot fa-lg me-4"></i>Láng
                     Thượng, Đống Đa, Hà
                     Nội
                 </h6>
             </span>
         </div>
         <div class="footer3 d-flex text-white flex-column mt-3 p-3 text-center">
-            <h3 style="font-size: 2vw">Các trang cá nhân</h3>
-            <a href="#" class="mb-4"><i class="fa-brands fa-facebook fa-lg me-3 "
-                    style="color: #ffffff;font-size:2vw"></i></a>
-            <a href="#" class="mb-4"><i class="fa-brands fa-instagram fa-lg me-3"
-                    style="color: #ffffff;font-size:2vw"></i></a>
-            <a href="#" class="mb-4"><i class="fa-brands fa-youtube fa-lg me-3"
-                    style="color: #ffffff;font-size:2vw"></i></a>
+            <h3>Cộng đồng PetCare</h3>
+            <a href="#" class="mb-4" aria-label="PetCare trên Facebook"><i class="fa-brands fa-facebook fa-lg me-3"></i></a>
+            <a href="#" class="mb-4" aria-label="PetCare trên Instagram"><i class="fa-brands fa-instagram fa-lg me-3"></i></a>
+            <a href="#" class="mb-4" aria-label="PetCare trên YouTube"><i class="fa-brands fa-youtube fa-lg me-3"></i></a>
         </div>
 
-    </div>
+    </footer>
     <div class="loading-overlay d-none">
         <div class="spinner-grow" role="status">
             <span class="visually-hidden">Loading...</span>
