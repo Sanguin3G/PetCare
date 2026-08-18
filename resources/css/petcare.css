@@ -585,3 +585,54 @@ html[data-theme="dark"] .pc-main-nav .offcanvas .btn-close { filter: invert(1) b
     .pc-product-toolbar form input { min-width: 0; }
     .pc-product-card { width: calc(50% - 1rem) !important; max-width: none !important; height: auto !important; min-height: 21rem; }
 }
+
+/* Bootstrap expands the offcanvas into the desktop navbar at this breakpoint.
+   Keep the drawer treatment mobile-only so the navigation cannot become a
+   tall, vertical block in the page flow on wide screens. */
+@media (min-width: 1200px) {
+    .pc-main-nav .offcanvas {
+        position: static !important;
+        z-index: auto !important;
+        display: block !important;
+        width: auto !important;
+        max-width: none;
+        height: auto !important;
+        max-height: none;
+        visibility: visible !important;
+        background: transparent;
+        border: 0;
+        transform: none !important;
+        transition: none;
+    }
+
+    .pc-main-nav .offcanvas-header { display: none; }
+
+    .pc-main-nav .offcanvas-body {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 1rem;
+        overflow: visible;
+    }
+
+    .pc-main-nav .offcanvas-body .navbar-nav {
+        display: flex !important;
+        width: auto;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+    }
+
+    .pc-main-nav .offcanvas-body .nav-item {
+        width: auto;
+        margin-right: 1.5rem !important;
+    }
+
+    .pc-main-nav .offcanvas-body .nav-link {
+        display: inline-flex;
+        width: auto;
+        padding: 0.45rem 0;
+        white-space: nowrap;
+    }
+}
