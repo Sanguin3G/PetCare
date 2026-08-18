@@ -18,10 +18,8 @@
           <div class="product-detail-img ms-2">
             {{-- Ảnh sản phẩm --}}
             <img class="img-float main-img-product" id="main-img-product"
-              style="max-width:800px;max-height:600px;border:1px solid  #EA9E1E;border-radius:5px" src="/assets/img-add-pro/<?php
-                                $listImage = $product->ImageProduct;
-                                echo $listImage[0]->image;
-                                ?>">
+              style="max-width:800px;max-height:600px;border:1px solid  #EA9E1E;border-radius:5px"
+              src="{{ asset('assets/img-add-pro/' . $product->getImgProduct($product->idPro)) }}">
 
             <div class="img-slide-small ms-2" style="max-width:140px">
               @foreach ($product->ImageProduct as $result)

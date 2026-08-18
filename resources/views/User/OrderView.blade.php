@@ -38,7 +38,7 @@
                                                         class="row mb-0 d-flex justify-content-between align-items-center">
                                                         @foreach ($order->OrderDetail as $row)
                                                         <div class="col-md-3 col-lg-3 col-xl-3 mb-4">
-                                                            <img src="{{ asset('assets/img-add-pro/' . $row->ProductDetail->ImageProduct[0]->image) }}"
+                                                            <img src="{{ asset('assets/img-add-pro/' . $row->ProductDetail->getImgProduct($row->ProductDetail->idPro)) }}"
                                                                 class="img-fluid rounded-3" alt="Cotton T-shirt">
                                                         </div>
                                                         <div class="col-md-3 col-lg-3 col-xl-3">

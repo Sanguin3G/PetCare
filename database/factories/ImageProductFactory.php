@@ -16,7 +16,7 @@ class ImageProductFactory extends Factory
     {
         return [
             'idPro' => null, // Sẽ được điền sau khi liên kết với Product
-            'image' => $this->faker->numberBetween(1, 9999999999) . '.jpg', // Tên file ảnh giả
+            'image' => '11744768508.webp', // Existing demo image in public/assets/img-add-pro
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];

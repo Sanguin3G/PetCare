@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         // Tạo 50 sản phẩm, mỗi sản phẩm có 1-3 ảnh
         Product::factory()
             ->count(10)
-            // ->has(ImageProduct::factory()->count(rand(1, 3)))
+            ->has(ImageProduct::factory()->count(1), 'ImageProduct')
             ->create();
     }
 }

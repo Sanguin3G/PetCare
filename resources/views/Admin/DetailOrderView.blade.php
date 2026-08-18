@@ -63,7 +63,7 @@
                 <tr>
                     <td>
                         <img class="img-fluid"
-                            src="{{ asset('assets/img-add-pro/' . $row->ProductDetail->ImageProduct[0]->image) }}"
+                            src="{{ asset('assets/img-add-pro/' . $row->ProductDetail->getImgProduct($row->ProductDetail->idPro)) }}"
                             style="max-width:200px">
                     </td>
                     <td>

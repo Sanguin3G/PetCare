@@ -126,7 +126,7 @@ class Product extends Model
     public function getImgProduct($id): string
     {
         $img = DB::table('image_products')->select('image')->where('idPro', $id)->limit(1)->first();
-        return $img->image;
+        return $img?->image ?? '11744768508.webp';
     }
     /**
      *
