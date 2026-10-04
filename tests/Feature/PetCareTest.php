@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\ImageProduct;
 use App\Models\Product;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -39,9 +38,15 @@ class PetCareTest extends TestCase
 
         $this->assertSame(6, Category::count());
         $this->assertSame(12, Product::count());
-        $this->assertSame(12, ImageProduct::count());
+        foreach (Product::with('ImageProduct')->get() as $product) {
+            $this->assertTrue($product->ImageProduct->isNotEmpty());
+        }
         $this->assertGreaterThan(1, Product::query()->distinct('idCat')->count('idCat'));
         $this->assertGreaterThan(1, Product::query()->distinct('discount')->count('discount'));
+        $this->seed(DatabaseSeeder::class);
+        $this->assertSame(12, Product::count());
+        $glove = Product::with('ImageProduct')->where('namePro', 'Găng tay chải lông thú cưng')->firstOrFail();
+        $this->assertSame(3, $glove->ImageProduct->count());
     }
 
     public function test_public_pages_expose_the_petcare_theme_switcher(): void
@@ -55,8 +60,8 @@ class PetCareTest extends TestCase
             if ($url === '/') {
                 $response
                     ->assertSee('id="offcanvasNavbar"', false)
-                    ->assertSee('aria-controls="petcare-main-nav"', false)
-                    ->assertSee('fa-angle-up', false);
+                    ->assertSee('data-product-search', false)
+                    ->assertDontSee('id="collapseButton"', false);
             }
         }
     }

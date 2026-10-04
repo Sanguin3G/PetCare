@@ -1,68 +1,38 @@
 @extends('User.LayoutTrangChu')
 @section('content')
 <div class="contentabout pc-about">
-  <div class="service text-center text-capitalize pc-about-intro">
+  <div class="text-center pc-about-intro">
     <span class="pc-section-kicker"><i class="fa-solid fa-paw" aria-hidden="true"></i> Câu chuyện PetCare</span>
     <h1 id="aboutText">Chăm tốt hơn, vui lâu hơn</h1>
-    <i class="fa-solid fa-heart"></i>
-    <p>PET LIKE US AND SO WILL YOU</p>
-
+    <p>PetCare là ứng dụng cửa hàng thú cưng bản demo, với sản phẩm mẫu để bạn khám phá trải nghiệm mua sắm.</p>
   </div>
   <div class="about container d-flex justify-content-around mt-3 pc-about-card">
     <div class="about-left d-flex flex-column justify-content-between">
-      <div class="about-left-1 text-right">
-        <span>
-          <h3 style="font-size:1.3vw 1.3vh">Cung Cấp Sản Phẩm Với Mức Giá Phải Chăng <i class="fa-brands fa-shopify"
-              style="color:red"></i></h3>
-          <p style="font-size:1.3vw 1.3vh">Ngoài các yếu tố về chất lượng sản phẩm, cửa hàng uy tín, chuyên nghiệp cần
-            mang đến sản phẩm với mức giá
-            cả
-            phải chăng</p>
-        </span>
+      <div class="about-left-1">
+        <h2 class="h5">Tìm món bé cần <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></h2>
+        <p>Tìm theo tên, lọc danh mục và sắp xếp sản phẩm để chọn thức ăn, đồ chơi hoặc đồ dùng cho bé.</p>
       </div>
-      <div class="about-left-2 text-right">
-        <span>
-          <h3 style="font-size:1.3vw 1.3vh">Nhân Viên Tư Vấn Nhiệt Tình, Am Hiểu Về Thú Cưng <i
-              class="fa-brands fa-shopify" style="color:red"></i>
-          </h3>
-          <p style="font-size:1.3vw 1.3vh">Bên cạnh các sản phẩm chất lượng, nhân viên của cửa hàng cũng có trình độ
-            chuyên nghiệp về chuyên môn cũng
-            như trong quá trình phục vụ khách hàng</p>
-        </span>
+      <div class="about-left-2">
+        <h2 class="h5">Thông tin rõ ràng <i class="fa-solid fa-tags" aria-hidden="true"></i></h2>
+        <p>Xem hình ảnh, giá và số lượng còn lại trước khi thêm sản phẩm vào giỏ.</p>
       </div>
     </div>
     <div>
-      <span class="pc-about-visual"><img class="img-fluid rounded-circle" src="{{ asset('assets/img/img-about.jpg') }}" alt="Một chú thú cưng được chăm sóc tại PetCare"></span>
+      <span class="pc-about-visual"><img class="img-fluid rounded-circle" src="{{ asset('assets/img/img-about.jpg') }}" alt="Thú cưng trong câu chuyện PetCare" loading="lazy"></span>
     </div>
     <div class="about-right d-flex flex-column justify-content-between ms-3">
-      <div class="about-right-1 text-left">
-        <span>
-          <h3 style="font-size:1.3vw 1.3vh">Cung Cấp Sản Phẩm Chất Lượng <i class="fa-brands fa-shopify"
-              style="color:red"></i></h3>
-          <p style="font-size:1.3vw 1.3vh">Một trong những tiêu chí quan trọng của cửa hàng là mang đến những sản phẩm
-            uy tín chất lượng đến khách
-            hàng
-          </p>
-        </span>
+      <div class="about-right-1">
+        <h2 class="h5">Giỏ hàng dễ chỉnh <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i></h2>
+        <p>Điều chỉnh số lượng, kiểm tra tổng tiền và nhập thông tin giao hàng trong một luồng đơn giản.</p>
       </div>
-      <div class="about-right-2 text-left">
-        <span>
-          <h3 style="font-size:1.3vw 1.3vh">Cung Cấp Sản Phẩm Đa Dạng, Phong Phú <i class="fa-brands fa-shopify"
-              style="color:red"></i></h3>
-          <p style="font-size:1.3vw 1.3vh">Mỗi loại thú cưng đều có nét riêng biệt của chúng nên cửa hàng chúng tôi có
-            đầy đủ các mặt hàng để đáp ứng
-            nhu cầu của từng loại thú cưng</p>
-        </span>
+      <div class="about-right-2">
+        <h2 class="h5">Theo dõi trong tài khoản <i class="fa-solid fa-box" aria-hidden="true"></i></h2>
+        <p>Xem lịch sử, chi tiết và trạng thái đơn hàng. Đơn đang chờ xử lý có thể được hủy khi cần.</p>
       </div>
     </div>
   </div>
-
-  <div class="mt-5 container">
-    <iframe title="Vị trí PetCare trên bản đồ"
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.122426224508!2d105.79755507486252!3d21.02778688062129!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab438eec0343%3A0xb8e48975c13d48!2zNy8xNDEgTmcuIDExOTQgxJAuIEzDoW5nLCBMw6FuZyBUaMaw4bujbmcsIMSQ4buRbmcgxJBhLCBIw6AgTuG7mWkgMTE3MDAwLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1718264171983!5m2!1svi!2s"
-      width="100%" height="450" style="border:0;" loading="lazy" allowfullscreen=""></iframe>
+  <div class="container text-center mt-4">
+    <a class="btn pc-primary-cta" href="{{ route('user.product', ['id' => 'all']) }}">Khám phá sản phẩm</a>
   </div>
 </div>
-
-<script src="{{ asset('assets/js/script.js') }}"></script>
 @endsection

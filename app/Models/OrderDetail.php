@@ -14,7 +14,7 @@ class OrderDetail extends Model
     public $timestamp = true;
     public $incrementing = false;
     public $keyType = 'string';
-    protected $fillable = ['number', 'idPro', 'price', 'idOrder'];
+    protected $fillable = ['number', 'idPro', 'price', 'idOrder', 'discount_snapshot'];
     use HasFactory;
     protected static function boot()
     {

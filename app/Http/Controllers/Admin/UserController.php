@@ -95,6 +95,8 @@ class UserController extends Controller
      */
     public function createAccountController(Request $request): JsonResponse
     {
+        if (!$request->is('api/auth/admin/register')) $request->merge(['role' => 'user']);
+        $request->validate(['name' => 'required|string|max:50', 'email' => 'required|email|max:255', 'phone' => 'nullable|string|max:20', 'password' => 'required|string|min:8|max:255', 'role' => 'required|in:user,admin,staff', 'OTP' => 'required|digits:6']);
         try {
             $result = $this->User->createAccountModel($request);
             if ($result === 'Active account successful') {
@@ -145,6 +147,7 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request): JsonResponse
     {
+        $request->validate(['name' => 'required|string|max:50', 'email' => ['required', 'email', 'max:255', \Illuminate\Validation\Rule::unique('users', 'email')->ignore(Auth::guard('api')->id())]]);
 
         try {
             $result = $this->User->updateInforAdminModel($request);

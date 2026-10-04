@@ -1,0 +1,14 @@
+.pc-auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-block: 5rem 2rem; }
+.pc-auth-intro { color: var(--pc-muted); }
+.pc-auth .form-label { font-weight: 650; }
+.pc-auth .form-control { min-height: 46px; border-radius: .75rem; }
+.pc-auth .btn { min-height: 46px; }
+.pc-password-field { position: relative; }
+.pc-password-field input { padding-right: 4.5rem; }
+.pc-password-toggle { position: absolute; top: 0; right: .25rem; min-width: 60px; height: 100%; border: 0; background: transparent; color: var(--pc-primary-strong); font-weight: 650; border-radius: .75rem; }
+.pc-auth-feedback { padding: .8rem; border-radius: .75rem; background: var(--pc-surface-soft); color: var(--pc-text); border-inline-start: 3px solid var(--pc-primary); overflow-wrap: anywhere; }
+.pc-auth-feedback.is-success { border-color: var(--pc-secondary); }
+.pc-auth .left-box { min-height: 400px; }
+.pc-auth .left-box img { max-width: 240px; height: auto; }
+.pc-auth-back { font-size: .9rem; }
+@media (max-width: 767px) { .pc-auth .left-box { min-height: auto; padding: .8rem; } .pc-auth .left-box img { max-width: 100px; } .pc-auth .left-box p { display: none; } .pc-auth .right-box { padding: 1.25rem .5rem .5rem; } }

@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Admin-Đăng Nhập</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
   <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/PetCARE.png') }}">
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome/css/all.min.css') }}"
     integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
   <!-- Vendor CSS Files -->
   <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
@@ -23,10 +19,10 @@
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
   {{-- toast message --}}
   <script src="
-            https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js
+            {{ asset('assets/vendor/toast/jquery.toast.min.js') }}
             "></script>
   <link href="
-            https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
+            {{ asset('assets/vendor/toast/jquery.toast.min.css') }}
             " rel="stylesheet">
   @vite('resources/js/Admin/account/LoginAdmin.js')
 </head>
@@ -55,18 +51,18 @@
                       <label for="yourUsername" class="form-label">Email</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="email" class="form-control" id="yourUsername">
+                        <input type="email" required autocomplete="username" name="email" class="form-control" id="yourUsername">
                       </div>
                     </div>
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Mật khẩu</label>
-                      <input type="password" name="password" class="form-control" id="yourPassword" required>
+                      <input type="password" autocomplete="current-password" name="password" class="form-control" id="yourPassword" required>
                     </div>
                     <div class="col-12">
-                      <a href=""><button class="btn btn-primary w-100" name="login" type="submit">Đăng nhập</button></a>
+                      <button class="btn btn-primary w-100" name="login" type="submit">Đăng nhập</button>
                     </div>
                     <div class="col-12">
-                      <p class="small mb-0">Bạn không nhớ tài khoản ? <a href="">Quên mật khẩu</a>
+                      <p class="small mb-0">Liên hệ quản trị viên cửa hàng nếu bạn cần khôi phục tài khoản.
                       </p>
                     </div>
                   </form>

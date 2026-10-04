@@ -1,6 +1,6 @@
 <div class="pagetitle">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" style="font-size:2vw;font-size:2vh">
+        <ol class="breadcrumb" style="">
             <li class="breadcrumb-item"><a href="{{ route('admin.order') }}">Danh sách đơn hàng</a></li>
             <li class="breadcrumb-item active" aria-current="page">Xem chi tiết</li>
         </ol>
@@ -16,11 +16,11 @@
     </form>
 
 </div> --}}
-<div class="container-fluid border border-primary rounded" style="font-size:2vw;font-size:2vh">
+<div class="container-fluid border border-primary rounded" style="">
     <div class="p-4">
         <div class="name d-inline-block">
             <span>
-                <p>Họ và tên: <b>{{ $order->UserInfo->name }} </b></p>
+                <p>Họ và tên: <b>{{ $order->name ?? $order->UserInfo?->name }} </b></p>
             </span>
         </div>
         <div class="local ">
@@ -30,7 +30,7 @@
         </div>
         <div class="phone mt-4">
             <span>
-                <p>Số điện thoại: <b> {{ $order->UserInfo->phone }}</b></p>
+                <p>Số điện thoại: <b> {{ $order->phone ?? $order->UserInfo?->phone }}</b></p>
             </span>
         </div>
         <div class="date mt-4">
@@ -41,15 +41,17 @@
         <div class="local mt-4">
             <span>
                 <p>Trạng thái </p>
-                @if ($order->status > 0)
-                <button style="font-size:2vw;font-size:2vh" class="btn btn-success">Đã giao hàng</button>
+                @if ($order->status < 0)
+                <span class="badge bg-danger">Đã hủy</span>
+                @elseif ($order->status > 0)
+                <span class="badge bg-success">Đã giao hàng</span>
                 @else
-                <button style="font-size:2vw;font-size:2vh" class="btn btn-danger">Chưa giao hàng</button>
+                <span class="badge bg-secondary">Chờ xác nhận</span>
                 @endif
 
             </span>
         </div>
-        <div class="order-detail mt-4">
+        <div class="order-detail table-responsive mt-4">
             <table class="table table-bordered table-hover text-center">
                 <tr>
                     <th>Ảnh</th>
@@ -63,18 +65,18 @@
                 <tr>
                     <td>
                         <img class="img-fluid"
-                            src="{{ asset('assets/img-add-pro/' . $row->ProductDetail->getImgProduct($row->ProductDetail->idPro)) }}"
-                            style="max-width:200px">
+                            src="{{ asset('assets/img-add-pro/' . ($row->ProductDetail?->getImgProduct($row->idPro) ?? '11744768508.webp')) }}"
+                            style="max-width:80px" alt="{{ $row->ProductDetail?->namePro ?? 'Sản phẩm' }}">
                     </td>
                     <td>
-                        {{ $row->ProductDetail->namePro }}
+                        {{ $row->ProductDetail?->namePro ?? 'Sản phẩm không còn trong danh mục' }}
                     </td>
                     <td>
-                        {{ number_format($row->ProductDetail->cost) }}đ
+                        {{ number_format($row->price, 0, ',', '.') }}đ
                     </td>
-                    @if ($row->ProductDetail->discount)
+                    @if (($row->discount_snapshot ?? $row->ProductDetail?->discount) > 0)
                     <td>
-                        {{ $row->ProductDetail->discount }}%
+                        {{ $row->discount_snapshot ?? $row->ProductDetail?->discount }}%
                     </td>
                     @else
                     <td></td>
@@ -85,7 +87,7 @@
                 @endforeach
             </table>
         </div>
-        <h5 class="text-end text-danger"><b>Tổng tiền: {{ $order->totalCost }}đ</b></h5>
+        <h5 class="text-end text-danger"><b>Tổng tiền: {{ $order->totalCost }} đ</b></h5>
         {{-- @if ($discountVoucher > 0 && $discountVoucher !== null)
         <h5 class="text-end text-danger"> <b>Giảm giá Voucher : {{ $discountVoucher }}%</b></h5>
         <h4 class="text-end text-danger"><b>Thành tiền :

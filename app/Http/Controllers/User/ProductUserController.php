@@ -3,58 +3,58 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Responses\ApiResponse;
-use Illuminate\Http\Request;
-use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Throwable;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductUserController extends Controller
 {
-    public function index($id)
+    public function index(Request $request, $id = 'all')
     {
-        if (is_numeric($id)) {
-            $products = Product::select()->where('idCat', $id)->get();
-            $category = Category::all();
-            $categoryName = DB::table('categories')->where('idCat', $id)->get();
-            return view('User.product', ['products' => $products, 'category' => $category, 'categoryName' => $categoryName]);
-        } else {
-            $categoryFist = Category::first();
-            // $product = DB::table('products')->where('idCat', $id)->get();
-            $idCatFirst = $categoryFist->idCat;
-            $products = Product::select()->where('idCat', $idCatFirst)->get();
-            // $id = $products->idCat;
-            $category = Category::all();
-            // $categoryName = DB::table('categories')->where('idCat', $id)->get();
-            return view('User.ProductView', ['products' => $products, 'category' => $category]);
-        }
+        $filters = $request->validate(['q' => 'nullable|string|max:100', 'category' => 'nullable|integer', 'sort' => 'nullable|in:recommended,newest,price-asc,price-desc']);
+        $selectedCategory = $filters['category'] ?? (is_numeric($id) ? $id : null);
+        $query = Product::with('ImageProduct');
+        if ($selectedCategory) $query->where('idCat', $selectedCategory);
+        $search = trim($filters['q'] ?? '');
+        if ($search !== '') $query->where('namePro', 'like', '%'.$search.'%');
+        $sort = $filters['sort'] ?? 'recommended';
+        match ($sort) {
+            'price-asc' => $query->orderByRaw('cost * (1 - COALESCE(discount, 0) / 100.0) asc'),
+            'price-desc' => $query->orderByRaw('cost * (1 - COALESCE(discount, 0) / 100.0) desc'),
+            'newest' => $query->latest(),
+            default => $query->orderByDesc('hot')->latest(),
+        };
+        return view('User.ProductView', ['products' => $query->orderBy('idPro')->paginate(12)->withQueryString(), 'category' => Category::all(), 'selectedCategory' => $selectedCategory, 'search' => $search, 'sort' => $sort]);
     }
-    public function getProductAjax()
+
+    public function search(Request $request)
     {
-        try {
-            $firstIdCat = Category::select('idCat')->first();
-            $field = $_GET['field'] ?? 'idPro';
-            $sort = $_GET['sort'] ?? 'desc';
-            $idCat = ($_GET['category'] && is_numeric($_GET['category'])) ? $_GET['category'] : $firstIdCat->idCat;
-            $product = Product::with('ImageProduct')->where('idCat', $idCat)->orderBy($field, $sort)->get();
-            return ApiResponse::Error($product, 'Thành công', 'success', 200);
-        } catch (Throwable $e) {
-            Log::error($e);
-            return ApiResponse::Error(null, 'Có lỗi xảy ra !', 'error', 500);
-        }
+        $validated = $request->validate(['q' => 'required|string|max:100']);
+        $q = trim($validated['q']);
+        if (mb_strlen($q) < 2) return response()->json(['data' => []]);
+        $categories = Category::pluck('name', 'idCat');
+        $products = Product::with('ImageProduct')->where('namePro', 'like', '%'.$q.'%')->orderByDesc('hot')->orderBy('namePro')->limit(6)->get();
+        return response()->json(['data' => $products->map(fn ($product) => [
+            'name' => $product->namePro, 'category' => $categories[$product->idCat] ?? '',
+            'price' => round($product->cost * (1 - ($product->discount ?? 0) / 100)),
+            'image' => $product->ImageProduct->first() ? asset('assets/img-add-pro/'.$product->ImageProduct->first()->image) : asset('assets/img/PetCARE.png'),
+            'url' => route('user.productDetail', ['id' => $product->idPro, 'name' => Str::slug($product->namePro) ?: 'product']),
+        ])]);
     }
+
+    public function getProductAjax(Request $request)
+    {
+        $request->validate(['field' => 'nullable|in:idPro,cost,namePro,created_at', 'sort' => 'nullable|in:asc,desc', 'category' => 'nullable|integer']);
+        $query = Product::with('ImageProduct');
+        if ($request->filled('category')) $query->where('idCat', $request->category);
+        return response()->json(['status' => 'success', 'message' => 'Thành công', 'data' => $query->orderBy($request->input('field', 'created_at'), $request->input('sort', 'desc'))->limit(60)->get()]);
+    }
+
     public function getDetail($id, $name)
     {
-        try {
-            $model = new Product();
-            $product = $model->getDetailProductModel($id, $name);
-            $productRelated = $model->getRelatedProduct($id);
-            // dd($productRelated)
-            return view("User.ProductDetailView", ['product' => $product, 'productRelated' => $productRelated]);
-        } catch (Throwable $e) {
-            return view("template.404_NOT_FOUND");
-        }
+        $product = Product::with('ImageProduct')->findOrFail($id);
+        $productRelated = Product::with('ImageProduct')->where('idCat', $product->idCat)->where('idPro', '!=', $id)->limit(4)->get();
+        return view('User.ProductDetailView', compact('product', 'productRelated'));
     }
 }

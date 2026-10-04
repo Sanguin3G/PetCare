@@ -1,116 +1,13 @@
-<!DOCTYPE html>
-<html lang="vi" data-theme="light" data-theme-preference="system">
-
-<head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Khôi phục mật khẩu | PetCare</title>
-        <script>
-            (() => {
-                try {
-                    const preference = localStorage.getItem('petcare-theme') || 'system';
-                    document.documentElement.dataset.themePreference = preference;
-                    document.documentElement.dataset.theme = preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : preference === 'system' ? 'light' : preference;
-                } catch (error) {}
-            })();
-        </script>
-        <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/PetCARE.png') }}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-        <link rel="stylesheet" href="../css/user-responsive.css">
-        <link rel="stylesheet" href="../css/user1.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
-        {{-- toast message --}}
-        <script src="https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css" rel="stylesheet">
-        @vite(['resources/css/petcare.css', 'resources/js/User/theme.js', 'resources/js/User/account/forgetpass.js'])
-</head>
-
-<body class="pc-auth">
-    <div class="pc-auth-theme">
-        @include('User.partials.theme-toggle')
-    </div>
-    <div class="loading-overlay d-none">
-        <div class="spinner-grow" role="status">
-        </div>
-        <span class="ms-3 mt-3">Loading ...</span>
-    </div>
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="row border rounded-5 p-3 bg-white shadow box-area">
-            <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
-                style="background: #FFE4DA;">
-                <div class="featured-image mb-3">
-                    <img src="{{ asset('assets/img/PetCARE.png') }}" class="img-fluid mt-3" style="width:100%" alt="PetCare">
-                </div>
-            </div>
-            <div class="col-md-6 right-box">
-                <div class="row align-items-center">
-                    <div class="header-text mb-4">
-                        <h3 class="text-center">QUÊN MẬT KHẨU</h3>
-                    </div>
-                    <form>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Your Email" type="text" id="yourEmail">
-                            <button class="input-group-text btn btn-primary" id="btn-send-OTP">Send OTP</button>
-                        </div>
-                    </form>
-                    <form class="formResetPass">
-                        <div class="form-group mb-3">
-                            <input name="OTP" class="form-control form-control-lg bg-light fs-6" id="yourOTP"
-                                placeholder="Nhập mã OTP">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input type="password" name="password" class="form-control form-control-lg bg-light fs-6"
-                                id="yourPassword" placeholder="Mật Khẩu mới">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input type="password" name="password_confirmation"
-                                class="form-control form-control-lg bg-light fs-6" id="yourConfirmPassword"
-                                placeholder="Nhập lại mật khẩu">
-                        </div>
-                        <div class="input-group mb-3 d-flex justify-content-center">
-                            <button class="btn btn-lg btn-warning w-50 fs-6" type="button" id="Btn-reset-pass">Đồng
-                                ý</button>
-                        </div>
-                    </form>
-                    <a style="text-decoration:none;color:blue;font-size: 1.3vw" class="me-2 ms-2 buttonLogin "
-                        href="{{ route('user.login') }}">Đăng
-                        Nhập</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-<style>
-    /* Nền tối che toàn màn hình */
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        color: white;
-        font-size: 18px;
-        z-index: 9999;
-    }
-
-    /* Hiệu ứng spinner */
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid rgba(255, 255, 255, 0.3);
-        border-top: 5px solid white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-bottom: 10px;
-    }
-</style>
-
-</html>
+@extends('User.partials.auth-layout')
+@section('title', 'Khôi phục mật khẩu')
+@section('intro', 'Nhận mã xác nhận qua email để đặt mật khẩu mới.')
+@section('auth-content')
+<form id="send-otp-form"><div class="mb-3"><label for="yourEmail" class="form-label">Email tài khoản</label><input id="yourEmail" name="email" type="email" autocomplete="email" class="form-control" required ></div>
+<p class="pc-auth-feedback d-none" data-feedback role="status" aria-live="polite"></p><button type="submit" class="btn btn-primary w-100 mb-4" id="btn-send-OTP">Gửi mã khôi phục</button></form><form class="formResetPass" hidden><h2 class="h5">Đặt mật khẩu mới</h2><div class="mb-3"><label for="yourOTP" class="form-label">Mã xác nhận</label><input id="yourOTP" name="OTP" type="text" autocomplete="one-time-code" class="form-control" required inputmode="numeric"></div>
+<div class="mb-3"><label for="yourPassword" class="form-label">Mật khẩu mới</label><div class="pc-password-field"><input id="yourPassword" name="password" type="password" autocomplete="new-password" class="form-control" required minlength="8" aria-describedby="password-hint"><button type="button" class="pc-password-toggle" data-password-toggle="yourPassword" aria-controls="yourPassword" aria-pressed="false">Hiện</button></div></div>
+<p id="password-hint" class="small pc-auth-intro">Ít nhất 8 ký tự. Nên kết hợp chữ, số và ký hiệu.</p><div class="mb-3"><label for="yourConfirmPassword" class="form-label">Nhập lại mật khẩu</label><div class="pc-password-field"><input id="yourConfirmPassword" name="password_confirmation" type="password" autocomplete="new-password" class="form-control" required minlength="8"><button type="button" class="pc-password-toggle" data-password-toggle="yourConfirmPassword" aria-controls="yourConfirmPassword" aria-pressed="false">Hiện</button></div></div>
+<p class="pc-auth-feedback d-none" data-feedback role="status" aria-live="polite"></p><button type="submit" id="Btn-reset-pass" class="btn btn-primary w-100">Đổi mật khẩu</button></form><p class="mt-4 mb-0"><a href="{{ route('user.login') }}">Trở lại đăng nhập</a></p>
+@endsection
+@section('auth-script')
+@vite('resources/js/User/account/forgetpass.js')
+@endsection

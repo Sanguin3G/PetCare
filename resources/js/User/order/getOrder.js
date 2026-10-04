@@ -1,88 +1,21 @@
-const urlFetch = "/api/user/order";
-const token = localStorage.getItem("authTokenPassport_user");
-function formatCost(value) {
-    return new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    }).format(value);
-}
-$.ajax({
-    url: urlFetch,
-    type: "GET",
-    headers: {
-        Authorization: "Bearer " + token,
-    },
-    success: function (res) {
-        $(".totalOrder").text(res.length + " Đơn hàng");
-        res.forEach((e) => {
-            // console.log(e);
-            // Browse each product in OrderDetail
-            e.OrderDetail.forEach((a) => {
-                var InforProduct = a.ProductDetail;
-                var discountProduct = InforProduct.discount;
-                var DetailProductPerOrder = null;
-                if (discountProduct > 0)
-                    var cost = formatCost(
-                        InforProduct.cost -
-                            InforProduct.cost * (InforProduct.discount / 100)
-                    )(
-                        (DetailProductPerOrder = `
-             <div class="col-md-3 col-lg-3 col-xl-3 mb-4">
-                                                                                <img src="/asset/img-add-product/${InforProduct.image_product[0].image}"
-                                                                                    class="img-fluid rounded-3"
-                                                                                    alt="Cotton T-shirt">
-                                                                            </div>
-                                                                            <div class="col-md-3 col-lg-3 col-xl-3">
-                                                                                {{-- <h6 class="text-muted">Shirt</h6> --}}
-                                                                                <h6 style="font-size:3vw;font-size:3vh"
-                                                                                    class="mb-0">
-                                                                                    ${InforProduct.namePro}
-                                                                                </h6>
-                                                                            </div>
-                                                                            <div class="col-md-1 col-lg-1 col-xl-1 d-flex">
-                                                                                <h5>x${InforProduct.number}</h5>
-                                                                            </div>
-                                                                            <div
-                                                                                class="col-md-3 col-lg-3 col-xl-3 offset-lg-1 text-danger">
-                                                                                    <h5>
-                                                                                        ${cost}
-                                                                                    </h5>
-                                                                            </div>
-            `)
-                    );
-                else {
-                    var cost = formatCost(InforProduct.cost);
-                    DetailProductPerOrder = `
-             <div class="col-md-3 col-lg-3 col-xl-3 mb-4">
-                                                                                <img src="/asset/img-add-product/${InforProduct.image_product[0].image}"
-                                                                                    class="img-fluid rounded-3"
-                                                                                    alt="Cotton T-shirt">
-                                                                            </div>
-                                                                            <div class="col-md-3 col-lg-3 col-xl-3">
-                                                                                {{-- <h6 class="text-muted">Shirt</h6> --}}
-                                                                                <h6 style="font-size:3vw;font-size:3vh"
-                                                                                    class="mb-0">
-                                                                                    ${InforProduct.namePro}
-                                                                                </h6>
-                                                                            </div>
-                                                                            <div class="col-md-1 col-lg-1 col-xl-1 d-flex">
-                                                                                <h5>x${InforProduct.number}</h5>
-                                                                            </div>
-                                                                            <div
-                                                                                class="col-md-3 col-lg-3 col-xl-3 offset-lg-1 text-danger">
-                                                                                    <h5><span
-                                                                                            class="text-danger">${cost}</span>
-                                                                                    </h5>
-                                                                            </div>
-            `;
-                }
-                $(".ListOrder").append(DetailProductPerOrder);
-                console.log(a);
-            });
-            // console.log(e.OrderDetail);
-        });
-    },
-    error: function (error) {
-        console.log(error);
-    },
+import '../../../css/commerce.css';
+document.addEventListener('click', async event => {
+    const button = event.target.closest('[data-cancel-order]');
+    if (!button || button.disabled) return;
+    if (!window.confirm('Hủy đơn hàng này? Sản phẩm sẽ được hoàn lại vào kho.')) return;
+    const page = button.closest('[data-order-page]');
+    const feedback = page.querySelector('[data-order-feedback]');
+    feedback.hidden = true;
+    button.disabled = true; button.textContent = 'Đang hủy…';
+    try {
+        const response = await fetch(`/api/user/order/${encodeURIComponent(button.dataset.cancelOrder)}/cancel`, {method:'PATCH', headers:{Accept:'application/json', Authorization:`Bearer ${localStorage.getItem('authTokenPassport_user')}`}});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Không thể hủy đơn. Vui lòng thử lại.');
+        button.closest('[data-order-id]').querySelector('[data-order-status]').textContent = 'Đã hủy';
+        button.remove();
+        feedback.className = 'alert alert-success'; feedback.textContent = data.message; feedback.hidden = false;
+    } catch (error) {
+        feedback.className = 'alert alert-danger'; feedback.textContent = error.message || 'Không thể kết nối. Vui lòng thử lại.'; feedback.hidden = false;
+        button.disabled = false; button.textContent = 'Hủy đơn hàng';
+    }
 });

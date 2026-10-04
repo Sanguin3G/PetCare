@@ -1,53 +1,15 @@
-import { Update } from "../../util";
-const csrfToken = $('meta[name="csrf-token"]').attr("content");
-const urlFetch = "category/update";
-$("#table-category").on(
-    "click",
-    ".buttonUpdateCategory",
-    async function (event) {
-        event.preventDefault();
-        var id = $(this).data("id");
-        var name = $(`#nameCatUpdate${id}`).val().trim();
-        console.log(name);
-        if (name !== "") {
-            var id = $(this).data("id");
-            if (id > 0) {
-                const response = await Update(urlFetch, {
-                    _token: csrfToken,
-                    idCat: id,
-                    name: name,
-                });
-                console.log(response);
-                if (response.message === "Cập nhật danh mục thành công") {
-                    $("#table-category tr").each(function () {
-                        var rowId = $(this).find("td:first").text().trim(); // Lấy ID từ cột đầu tiên
-                        if (rowId == id) {
-                            $(this).find("td:eq(1)").text(name);
-                        }
-                    });
-                    $.toast({
-                        heading: "Thông báo",
-                        text: response.message,
-                        showHideTransition: "slide",
-                        icon: response.status,
-                        position: "bottom-right",
-                    });
-                } else {
-                    $.toast({
-                        heading: "Thông báo",
-                        text: response.message,
-                        showHideTransition: "slide",
-                        icon: response.status,
-                        position: "bottom-right",
-                    });
-                }
-            } else {
-                console.log(false);
-                return;
-            }
-        } else {
-            alert("Vui lòng nhập tên danh mục");
-            return;
-        }
-    }
-);
+import { Update } from '../../util';
+$('#table-category').on('click','.buttonUpdateCategory',async function(event) {
+    event.preventDefault(); if(this.disabled) return;
+    const button=this, id=button.dataset.id, input=document.getElementById(`nameCatUpdate${id}`);
+    const name=input.value.trim(); if(!name) { input.focus(); input.classList.add('is-invalid'); return; }
+    input.classList.remove('is-invalid'); button.disabled=true;
+    try {
+        const response=await Update('category/update',{idCat:id,name,_token:$('meta[name="csrf-token"]').attr('content')});
+        if(response.status !== 'success') throw {responseJSON:response};
+        $(button).closest('tr').children('td').eq(1).text(name);
+        bootstrap.Modal.getInstance(button.closest('.modal'))?.hide();
+        $.toast({heading:'Đã lưu',text:response.message,icon:'success',position:'bottom-right'});
+    } catch(error) { $.toast({heading:'Không thể lưu',text:error.responseJSON?.message || 'Vui lòng thử lại.',icon:'error',position:'bottom-right'}); }
+    finally { button.disabled=false; }
+});

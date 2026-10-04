@@ -1,101 +1,30 @@
-var UrlFetch = "/api/auth/admin/login";
-
-$(".formLogin").on("submit", function (event) {
-    event.preventDefault();
-    var username = $("#yourUsername").val().trim();
-    var pass = $("#yourPassword").val().trim();
-    if (username === "" || pass === "") {
-        alert("Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-    $(".loading-overlay").removeClass("d-none");
-    var data = {
-        _token: $('meta[name="csrf-token"]').attr("content"),
-        email: username,
-        password: pass,
-    };
-    $.ajax({
-        url: UrlFetch,
-        type: "POST",
-        data: data,
-        success: function (response) {
-            console.log("Login response:", response);
-            $(".loading-overlay").addClass("d-none");
-
-            if (response.message === "Thành công") {
-                $.toast({
-                    heading: "Thông báo",
-                    text: response.message,
-                    showHideTransition: "slide",
-                    icon: "success",
-                    position: "bottom-right",
-                });
-
-                // Lưu token và redirect
-                localStorage.setItem("authTokenPassport", response.data);
-                $.ajax({
-                    url: "/admin/",
-                    type: "GET",
-                    headers: {
-                        Authorization:
-                            "Bearer " +
-                            localStorage.getItem("authTokenPassport"),
-                    },
-                    success: function (html) {
-                        // console.log("Admin page reloaded successfully");
-                        $("body").html(html);
-                    },
-                    error: function (xhr) {
-                        console.log(xhr);
-                    },
-                });
-            } else {
-                $.toast({
-                    heading: "Thông báo",
-                    text: response.message || "Đăng nhập thất bại",
-                    showHideTransition: "slide",
-                    icon: "error",
-                    position: "bottom-right",
-                });
-            }
-        },
-        error: function (xhr) {
-            console.log("Login error:", xhr.responseJSON);
-            $(".loading-overlay").addClass("d-none");
-            $.toast({
-                heading: "Lỗi",
-                text: xhr.responseJSON?.message || "Có lỗi xảy ra",
-                showHideTransition: "slide",
-                icon: "error",
-                position: "bottom-right",
-            });
-        },
-    });
+const form=document.querySelector('.formLogin');
+const button=form.querySelector('[type="submit"]');
+const csrf=document.querySelector('meta[name="csrf-token"]').content;
+let busy=false;
+function showError(message) { $.toast({heading:'Không thể đăng nhập',text:message,icon:'error',position:'bottom-right'}); }
+async function connectSession(token) {
+    await $.ajax({url:'/admin/session',type:'POST',headers:{Authorization:`Bearer ${token}`,'X-CSRF-TOKEN':csrf}});
+}
+form.addEventListener('submit',async event => {
+    event.preventDefault(); if(busy || !form.reportValidity()) return;
+    busy=true; button.disabled=true; button.textContent='Đang đăng nhập…';
+    try {
+        const response=await $.ajax({url:'/api/auth/admin/login',type:'POST',data:{email:$('#yourUsername').val().trim(),password:$('#yourPassword').val(),_token:csrf}});
+        if(response.status !== 'success' || typeof response.data !== 'string') throw {responseJSON:response};
+        // Preserve existing API authentication; the cookie authenticates native admin pages.
+        await connectSession(response.data);
+        localStorage.setItem('authTokenPassport',response.data);
+        window.location.replace('/admin');
+    } catch(error) { showError(error.responseJSON?.message || 'Vui lòng thử lại.'); }
+    finally { busy=false; button.disabled=false; button.textContent='Đăng nhập'; }
 });
-
-// Xử lý khi truy cập trực tiếp hoặc refresh /admin/
-$(document).ready(function () {
-    if (
-        window.location.pathname === "/admin/" &&
-        localStorage.getItem("authTokenPassport")
-    ) {
-        $.ajax({
-            url: "/admin/",
-            type: "GET",
-            headers: {
-                Authorization:
-                    "Bearer " + localStorage.getItem("authTokenPassport"),
-            },
-            success: function (html) {
-                console.log("Admin page reloaded successfully");
-                $("body").html(html);
-            },
-            error: function (xhr) {
-                console.log("Error reloading admin page:", xhr.responseText);
-                if (xhr.status === 401) {
-                    window.location.href = "/admin/login";
-                }
-            },
-        });
-    }
-});
+// Existing valid logins can reconnect after their browser-session cookie expires.
+const stored=localStorage.getItem('authTokenPassport');
+if(stored) {
+    busy=true; button.disabled=true;
+    connectSession(stored).then(() => window.location.replace('/admin')).catch(error => {
+        if(error.status === 401 || error.status === 403) localStorage.removeItem('authTokenPassport');
+        else showError('Không thể khôi phục phiên đăng nhập. Vui lòng thử lại.');
+    }).finally(() => { busy=false; button.disabled=false; });
+}

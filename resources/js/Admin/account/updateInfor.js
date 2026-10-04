@@ -1,221 +1,43 @@
-const UrlUpdatePass = "/admin/changePass";
-const UrlUpdateInfor = "/admin/updateProfile";
-const UrlFetch = "/api/admin/profile";
-const token = localStorage.getItem("authTokenPassport");
-var dataUser = null;
-$.ajax({
-    url: UrlFetch,
-    type: "GET",
-    headers: {
-        Authorization: "Bearer " + token,
-    },
-    success: function (response) {
-        if (response.message == "Thành công") {
-            dataUser = response.data;
-            $("#UserName").text(dataUser.name);
-            $("#name").val(dataUser.name);
-            $("#email").val(dataUser.email);
-        } else {
-            window.location.href = "/admin/";
-        }
-    },
-    error: function (error) {
-        console.log(error);
-    },
+const headers={Authorization:`Bearer ${localStorage.getItem('authTokenPassport')}`,'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content};
+const profile=document.getElementById('FormUpdateInforAdmin');
+function feedback(form,message,success=false) {
+    const box=form.querySelector('[data-form-feedback]'); box.className=`alert ${success ? 'alert-success' : 'alert-danger'}`; box.textContent=message;
+}
+$.ajax({url:'/api/admin/profile',headers}).done(response => {
+    if(!response.data) { feedback(profile,'Không thể tải thông tin tài khoản. Vui lòng tải lại trang.'); return; }
+    profile.elements.name.value=response.data.name; profile.elements.email.value=response.data.email;
+    document.getElementById('admin-profile-fields').disabled=false;
+}).fail(() => {
+    document.getElementById('admin-profile-fields').disabled=false;
+    feedback(profile,'Không thể tải thông tin tài khoản. Vui lòng tải lại trang trước khi lưu.');
+    profile.querySelector('[type="submit"]').disabled=true;
 });
-$("#RedirectHomeInProfile").on("click", function () {
-    $.ajax({
-        url: "/admin/",
-        type: "GET",
-        headers: {
-            Authorization:
-                "Bearer " + localStorage.getItem("authTokenPassport"),
-        },
-        success: function (html) {
-            // console.log("Admin page reloaded successfully");
-            $("body").html(html);
-        },
-        error: function (xhr) {
-            console.log(xhr);
-        },
+function attachForm(form,url,onSuccess) {
+    form.addEventListener('submit',async event => {
+        event.preventDefault(); const button=form.querySelector('[type="submit"]');
+        if(button.disabled || !form.reportValidity()) return;
+        form.querySelectorAll('.is-invalid').forEach(input=>input.classList.remove('is-invalid'));
+        form.querySelector('[data-form-feedback]').className='alert d-none';
+        if(form.elements.new_password && form.elements.new_password.value !== form.elements.new_password_confirmation.value) {
+            const input=form.elements.new_password_confirmation; input.classList.add('is-invalid'); form.querySelector('[data-error-for="new_password_confirmation"]').textContent='Mật khẩu nhập lại chưa khớp.'; input.focus(); return;
+        }
+        const label=button.textContent; button.disabled=true; button.textContent='Đang lưu…';
+        const data=Object.fromEntries(new FormData(form)); if(data.name) data.name=data.name.trim(); if(data.email) data.email=data.email.trim();
+        try {
+            const response=await $.ajax({url,type:'PATCH',headers,data});
+            if(response.status !== 'success') throw {responseJSON:response};
+            onSuccess(); feedback(form,'Đã lưu thay đổi.',true);
+        } catch(error) {
+            const result=error.responseJSON;
+            Object.entries(result?.errors || {}).forEach(([name,messages]) => {
+                const input=form.elements[name], message=form.querySelector(`[data-error-for="${name}"]`);
+                if(input && message) { input.classList.add('is-invalid'); message.textContent=messages[0]; }
+            });
+            feedback(form,result?.message || 'Không thể lưu thay đổi. Vui lòng thử lại.');
+            form.querySelector('.is-invalid')?.focus();
+        } finally { button.disabled=false; button.textContent=label; }
     });
-});
-$("#FormUpdatePassWordAdmin").on("submit", function (event) {
-    event.preventDefault();
-    try {
-        if (
-            $(".is-invalid").length > 0 ||
-            $("#newPassword_update").val() == "" ||
-            $("#renewPassword_update").val() == "" ||
-            $("#currentPassword_update").val() == ""
-        ) {
-            alert("Vui lòng kiểm tra lại mật khẩu");
-            return;
-        } else {
-            $(".loading-overlay").removeClass("d-none");
-            $.ajax({
-                url: UrlUpdatePass,
-                type: "POST",
-                headers: {
-                    Authorization: "Bearer " + token,
-                },
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                    old_password: $("#currentPassword_update").val().trim(),
-                    new_password: $("#newPassword_update").val().trim(),
-                },
-                success: function (response) {
-                    console.log(response);
-                    if (response.message == "Đổi mật khẩu thành công !") {
-                        $(".loading-overlay").addClass("d-none");
-                        $("#newPassword_update").val("");
-                        $("#renewPassword_update").val("");
-                        $("#currentPassword_update").val("");
-                        $("#newPassword_update").removeClass("is-valid");
-                        $("#renewPassword_update").removeClass("is-valid");
-                        $("#currentPassword_update").removeClass("is-valid");
-                        $.toast({
-                            heading: "Thông báo",
-                            text: response.message,
-                            showHideTransition: "slide",
-                            icon: response.status,
-                            position: "bottom-right",
-                        });
-                    } else {
-                        $(".loading-overlay").addClass("d-none");
-                        $.toast({
-                            heading: "Thông báo",
-                            text: response.message,
-                            showHideTransition: "slide",
-                            icon: response.status,
-                            position: "bottom-right",
-                        });
-                    }
-                },
-                error: function (e) {
-                    $(".loading-overlay").addClass("d-none");
-                    $.toast({
-                        heading: "Thông báo",
-                        text: "Có lỗi xảy ra",
-                        showHideTransition: "slide",
-                        icon: "error",
-                        position: "bottom-right",
-                    });
-                },
-            });
-        }
-    } catch (e) {
-        console.log(e);
-    }
-});
-// update infor
-$("#FormUpdateInforAdmin").on("submit", function (event) {
-    event.preventDefault();
-    try {
-        if (
-            $(".is-invalid").length > 0 ||
-            $("#name").val() == "" ||
-            $("#email").val() == ""
-        ) {
-            alert("Vui lòng kiểm tra lại thông tin");
-            return;
-        } else {
-            $(".loading-overlay").removeClass("d-none");
-            $.ajax({
-                url: UrlUpdateInfor,
-                type: "POST",
-                headers: {
-                    Authorization: "Bearer " + token,
-                },
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                    name: $("#name").val().trim(),
-                    email: $("#email").val().trim(),
-                },
-                success: function (response) {
-                    $(".loading-overlay").addClass("d-none");
-                    $("#name").removeClass("is-valid");
-                    $("#email").removeClass("is-valid");
-                    if (response.status == "success") {
-                        $.toast({
-                            heading: "Thông báo",
-                            text: response.message,
-                            showHideTransition: "slide",
-                            icon: response.status,
-                            position: "bottom-right",
-                        });
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 500);
-                    } else {
-                        $.toast({
-                            heading: "Thông báo",
-                            text: response.message,
-                            showHideTransition: "slide",
-                            icon: response.status,
-                            position: "bottom-right",
-                        });
-                    }
-                },
-                error: function (e) {
-                    $(".loading-overlay").addClass("d-none");
-                    $.toast({
-                        heading: "Thông báo",
-                        text: "Có lỗi xảy ra",
-                        showHideTransition: "slide",
-                        icon: "error",
-                        position: "bottom-right",
-                    });
-                },
-            });
-        }
-    } catch (e) {
-        console.log(e);
-    }
-});
-$("#newPassword_update").on("change", function () {
-    // 8 ký tự  bao gồm chữ , số , chữ hoa
-    // const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8})$/;
-    const regex = /^.{8,}$/;
-
-    var pass = $(this).val();
-    var check = regex.test(pass);
-    if (check) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
-$("#renewPassword_update").on("change", function () {
-    // const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8})$/;
-    const regex = /^.{8,}$/;
-    var rePass = $(this).val();
-    var check = regex.test(rePass);
-    if (check && rePass === $("#newPassword_update").val()) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
-$("#name").on("change", function () {
-    const regex =
-        /^[A-Za-z\sAÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZaàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz ]+$/;
-    var name = $(this).val();
-    var check = regex.test(name);
-    if (check) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
-$("#email").on("change", function () {
-    const regex =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    var email = $(this).val();
-    var check = regex.test(email);
-    if (check) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
+}
+attachForm(profile,'/api/admin/profile',()=>$('#NameUser').text(profile.elements.name.value));
+const password=document.getElementById('FormUpdatePassWordAdmin');
+attachForm(password,'/api/admin/account/changepass',()=>password.reset());

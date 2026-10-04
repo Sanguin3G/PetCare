@@ -1,3 +1,4 @@
+$.ajaxSetup({ headers: { Authorization: `Bearer ${localStorage.getItem('authTokenPassport')}` } });
 var data = null;
 var email = null;
 var UrlSendOTP = "/api/auth/admin/register/sendOTP";
@@ -39,7 +40,7 @@ $("#FormRegisterAdminButton").on("click", function () {
                     // hiển thị loading
                     $(".loading-overlay").addClass("d-none");
                     modal.show();
-                    console.log(data);
+
                 } else {
                     // hiển thị loading
                     $(".loading-overlay").addClass("d-none");

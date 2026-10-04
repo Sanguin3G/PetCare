@@ -55,7 +55,7 @@ class User extends Authenticatable
                 return 'Not Found';
             }
             $pass1 = $user->password;
-            Log::info($user);
+
             if (Hash::check($request->password, $pass1)) {
                 $token = $user->createToken($user->email)->accessToken;
                 return $token;
@@ -166,29 +166,12 @@ class User extends Authenticatable
      *  */
     public function updatePassword($request): string
     {
-        try {
-            DB::beginTransaction();
-            $email =  Auth::guard('api')->user()->email;
-            $user = User::where('email', $email)->first();
-            if (!$user) {
-                return "Account Not Found";
-            }
-            $oldPass = $user->password;
-            Log::error($oldPass);
-            if (!Hash::check($request->new_password, $oldPass)) {
-                return "Password not valid";
-            }
-            if (Hash::check($request->new_password, $oldPass)) {
-                $user->password = Hash::make($request->new_password);
-                $user->save();
-                DB::commit();
-            }
-            return "Success";
-        } catch (Throwable $e) {
-            DB::rollBack();
-            Log::error($e);
-            return "Error";
-        }
+        $user = Auth::guard('api')->user();
+        if (!$user) return 'Account Not Found';
+        if (!Hash::check($request->old_password, $user->password)) return 'Password not valid';
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+        return 'Success';
     }
     /**
      * @param $request
@@ -289,7 +272,7 @@ class User extends Authenticatable
             $OTP = $request->OTP;
             $email = $request->email;
             $newpass = $request->password;
-            Log::info($newpass);
+
             if ($this->checkOTP($OTP, $email)) {
                 $this->resetPass($email, $newpass);
                 return 'success';
@@ -334,7 +317,7 @@ class User extends Authenticatable
     protected function checkOTP($OTP, $email): bool
     {
         try {
-            $check = DB::table("opt_regist_forget_account")->where(['email' => $email, 'OTP' => $OTP])->orderBy('id', 'desc')->first();
+            $check = DB::table("opt_regist_forget_account")->where(['email' => $email, 'OTP' => $OTP, 'type' => 'forget'])->where('expired_at', '>', now())->orderBy('id', 'desc')->first();
             if ($check) {
                 return true;
             }

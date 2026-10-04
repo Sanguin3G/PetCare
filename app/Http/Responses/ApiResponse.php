@@ -13,7 +13,7 @@ class ApiResponse
             'message' => $message,
             'data' => $data,
             'responseCode' => $responseCode
-        ]);
+        ], $responseCode);
     }
     public static function Error($data, string $message, $status, $responseCode)
     {
@@ -22,6 +22,6 @@ class ApiResponse
             'message' => $message,
             'data' => $data,
             'responseCode' => $responseCode
-        ]);
+        ], $responseCode);
     }
 }

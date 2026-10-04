@@ -44,6 +44,7 @@ class CustomerController extends Controller
     }
     public function changePass(Request $request)
     {
+        $request->validate(['old_password' => 'required|string', 'new_password' => 'required|string|min:8|max:255']);
         try {
             $result = $this->user->updatePassword($request);
             if ($result == 'Success') {
@@ -63,6 +64,7 @@ class CustomerController extends Controller
     }
     public function sendOTPForgetPassController(Request $request)
     {
+        $request->validate(['email' => 'required|email|max:255']);
         try {
             $result = $this->user->sendOTPForgetPasswordAccountModel($request->email);
             if ($result === 'success') {
@@ -78,6 +80,7 @@ class CustomerController extends Controller
     }
     public function resetPasswordController(Request $request)
     {
+        $request->validate(['email' => 'required|email|max:255', 'OTP' => 'required|digits:6', 'password' => 'required|string|min:8|max:255']);
         try {
             $result = $this->user->ResetPasswordAccountModel(($request));
             if ($result === 'success') {

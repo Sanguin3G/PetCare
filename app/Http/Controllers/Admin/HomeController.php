@@ -16,7 +16,11 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         return view('Admin.HomeAdmin', [
-           
+            'todayOrders' => Order::whereDate('created_at', today())->count(),
+            'pendingOrders' => Order::where('status', 0)->count(),
+            'outOfStock' => Product::where('count', '<=', 0)->count(),
+            'productCount' => Product::count(),
+            'recentOrders' => Order::latest()->limit(5)->get(),
         ]);
     }
 }

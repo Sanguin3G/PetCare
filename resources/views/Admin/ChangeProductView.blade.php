@@ -2,39 +2,39 @@
 @section('content')
     <div class="pagetitle">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb" style="font-size:2vw;font-size:2vh">
+            <ol class="breadcrumb" style="">
                 <li class="breadcrumb-item" id="ManageProduct">Quản lý sản phẩm</li>
                 <li class="breadcrumb-item active" aria-current="page">Sửa sản phẩm</li>
             </ol>
         </nav>
-        <div style="background-color: white;padding:20px;border-radius:20px;box-shadow: 2px 2px 2px #FFCC99;">
+        <div class="admin-form-surface p-4"><h1>Sửa sản phẩm</h1>
             <!-- End Page Title -->
-            <form style="font-size:2vw;font-size:2vh" method="post" id="UpdateProForm" enctype="multipart/form-data"
+            <form style="" method="post" id="UpdateProForm" enctype="multipart/form-data"
                 class="row mt-4">
                 <input value="{{ $product->idPro }}" id="idProHidden" hidden>
                 <div class="form-group col-md-8">
                     <label style="font-weight: bolder;" class="control-label">Tên sản phẩm</label>
-                    <input style="font-size:2vw;font-size:2vh" class="form-control" id="namepro"
+                    <input style="" class="form-control" id="namepro"
                         value="{{ $product->namePro }}" name="namepro" type="text" required>
                 </div>
                 <div class="form-group col-md-4">
                     <label style="font-weight: bolder;" class="control-label">Số lượng</label>
-                    <input style="font-size:2vw;font-size:2vh" class="form-control" value="{{ $product->count }}"
+                    <input style="" class="form-control" value="{{ $product->count }}"
                         name="countpro" id="countpro" type="text" required>
                 </div>
                 <div class="form-group col-md-4">
                     <label style="font-weight: bolder;" class="control-label mt-3">Giá bán(VND)</label>
-                    <input style="font-size:2vw;font-size:2vh" class="form-control" id="giabanpro"
+                    <input style="" class="form-control" id="giabanpro"
                         value="{{ $product->cost }}" name="giabanpro" type="text" required>
                 </div>
                 <div class="form-group  col-md-4">
                     <label style="font-weight: bolder;" class="control-label mt-3">Giảm giá(%)</label>
-                    <input style="font-size:2vw;font-size:2vh" class="form-control" id="giavonpro" name="discount"
+                    <input style="" class="form-control" id="giavonpro" name="discount"
                         value="{{ $product->discount }}" type="text">
                 </div>
                 <div class="form-group col-md-3">
                     <label style="font-weight: bolder;" class="control-label mt-3">Danh mục</label>
-                    <select style="font-size:2vw;font-size:2vh" class="form-control" id="danhmucAddpro" name="danhmucAddpro"
+                    <select style="" class="form-control" id="danhmucAddpro" name="danhmucAddpro"
                         required>
                         <option value="{{ $product->idCat }}">{{ $nameCat }}</option>
                         @foreach ($category as $row)
@@ -44,14 +44,14 @@
                 </div>
                 <div class="form-group ">
                     <label style="font-weight: bolder;" class="control-label mt-3">Mô tả sản phẩm</label>
-                    <textarea style="font-size:2vw;font-size:2vh" id="mota" name="mota" class="form-control">{{ $product->description }} </textarea>
+                    <textarea style="" id="mota" name="mota" class="form-control">{{ $product->description }} </textarea>
                     <script type="text/javascript">
                         CKEDITOR.replace("mota");
                     </script>
                 </div>
                 <div class="form-group col-md-12">
                     <label style="font-weight: bolder;" class="control-label mt-3">Ảnh sản phẩm</label>
-                    <input style="font-size:2vw;font-size:2vh" class="form-control" multiple id="imagepro"
+                    <input style="" class="form-control" multiple id="imagepro"
                         name="imagepro[]" style="width:30%" type="file">
                 </div>
                 <div class="image-preview">
@@ -67,7 +67,7 @@
 
                 </div>
                 <button class="btn btn-success mt-4 ms-2" type="submit" id="buttonAddPro"
-                    style="width:10%;font-size:2vw;font-size:2vh" name="addproduct">Cập nhật
+                    style="width:10%;" name="addproduct">Cập nhật
                 </button>
             </form>
         </div>

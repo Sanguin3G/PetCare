@@ -1,7 +1,7 @@
 @extends('Admin.Layout')
 @section('content')
     <div class="pagetitle">
-        <h1 style="font-size:2.5vw;font-size:2.5vh">Quản lý sản phẩm</h1>
+        <h1 style="">Quản lý sản phẩm</h1>
         <!-- End Page Title -->
         <div class="row">
             <div class="col-md-12">
@@ -9,18 +9,15 @@
                     <div class="tile-body">
                         <div class="button-function d-flex justify-content-between mt-3 mb-4" style="width:70%">
 
-                            <button style="font-size:2vw;font-size:2vh" id="uploadfile"
-                                class="btn btn-success btn-sm nhap-tu-file" type="button" title="Nhập"><a
-                                    style="color:white" href="{{ route('admin.addForm') }}"><i class="fas fa-plus"></i>>
-                                    Tạo mới sản phẩm</a></button>
+                            <a class="btn btn-success" href="{{ route('admin.addForm') }}"><i class="fas fa-plus" aria-hidden="true"></i> Tạo sản phẩm</a>
                         </div>
                         <div class="search mt-4 mb-4 input-group" style="width:50%">
-                            <button style="font-size:2vw;font-size:2vh" class="input-group-text btn btn-success"><i
-                                    class="fa-solid fa-magnifying-glass"></i></button>
-                            <input class="form-control" type="text" id="searchProduct">
+                            <span style="" class="input-group-text btn btn-success" aria-hidden="true"><i
+                                    class="fa-solid fa-magnifying-glass"></i></span>
+                            <input class="form-control" type="text" id="searchProduct" aria-label="Tìm sản phẩm theo tên…" placeholder="Tìm sản phẩm theo tên…">
                         </div>
                         <div class="table-responsive">
-                            <table style="font-size:2vw;font-size:2vh" class="table table-hover table-bordered "
+                            <table style="" class="table table-hover table-bordered "
                                 id="sampleTable">
                                 <thead>
                                     <tr class="table-success text-center">
@@ -36,14 +33,14 @@
                                     </tr>
                                 </thead>
                                 <tbody id="table-product">
-                                    @foreach ($product as $row)
+                                    @forelse ($product as $row)
                                         <tr class="text-center">
                                             <td>{{ $row->idPro }}</td>
                                             <td>{{ $row->namePro }}</td>
                                             @if ($row->ImageProduct->isNotEmpty())
                                                 <td class="text-center"><img
                                                         src="{{ asset('assets/img-add-pro/' . $row->ImageProduct->first()->image) }}"
-                                                        style="width:10vw;height:auto"></td>
+                                                        style="width:10vw;height:auto" alt="{{ $row->namePro }}" loading="lazy"></td>
                                             @else
                                                 <td></td>
                                             @endif
@@ -67,24 +64,17 @@
                                                 <td></td>
                                             @endif
                                             <td class="table-td-center">
-                                                <button style="font-size:2vw;font-size:2vh"
+                                                <button style=""
                                                     class="btn btn-danger btn-sm trash button-delete-product"
-                                                    data-id="{{ $row->idPro }}" type="button" title="Xóa">
+                                                    data-id="{{ $row->idPro }}" type="button" title="Xóa" aria-label="Xóa sản phẩm">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
-                                                <button style="font-size:2vw;font-size:2vh"
-                                                    class="btn btn-success btn-sm edit" type="button" title="Sửa"
-                                                    id="show-emp">
-                                                    <?php
-                                                    $nameProduct = Str::slug($row->namePro);
-                                                    ?>
-                                                    <a style="text-decoration:none;color:white"
-                                                        href="{{ route('admin.changeProductView', ['id' => $row->idPro, 'name' => $nameProduct]) }}"><i
-                                                            class="fas fa-edit"></i> </a>
-                                                </button>
+                                                <a class="btn btn-success btn-sm" aria-label="Sửa sản phẩm" title="Sửa" href="{{ route('admin.changeProductView', ['id' => $row->idPro, 'name' => Str::slug($row->namePro)]) }}"><i class="fas fa-edit" aria-hidden="true"></i></a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+<tr><td colspan="9" class="text-center py-5">Chưa có dữ liệu để hiển thị.</td></tr>
+@endforelse
                                 </tbody>
                             </table>
                         </div>

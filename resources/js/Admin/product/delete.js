@@ -1,41 +1,11 @@
-import { Delete } from "../../util";
-const csrfToken = $('meta[name="csrf-token"]').attr("content");
-const TokenApi = localStorage.getItem("authTokenPassport");
-const urlFetch = "product/delete";
-
-$("#table-product").on("click", ".button-delete-product", async function () {
-    if (confirm("Xác nhận xóa sản phẩm này ?")) {
-        $(".loading-overlay").removeClass("d-none");
-        var id = $(this).data("id");
-        var data = {
-            idPro: id,
-            _token: csrfToken,
-        };
-        const response = await Delete(urlFetch, data);
-        if (response.message === "Xóa sản phẩm thành công") {
-            $("#table-product tr").each(function () {
-                var rowId = $(this).find("td:first").text().trim(); // Lấy ID từ cột đầu tiên
-                if (rowId == id) {
-                    $(this).remove(); // Xóa dòng có ID trùng
-                }
-            });
-            $.toast({
-                heading: "Thông báo",
-                text: response.message,
-                showHideTransition: "slide",
-                icon: response.status,
-                position: "bottom-right",
-            });
-            $(".loading-overlay").addClass("d-none");
-        } else {
-            $.toast({
-                heading: "Thông báo",
-                text: response.message,
-                showHideTransition: "slide",
-                icon: response.status,
-                position: "bottom-right",
-            });
-            $(".loading-overlay").addClass("d-none");
-        }
-    }
+import { Delete } from '../../util';
+$('#table-product').on('click','.button-delete-product',async function() {
+    if(this.disabled || !confirm('Xác nhận xóa sản phẩm này?')) return;
+    const button=this; button.disabled=true;
+    try {
+        const response=await Delete('product/delete',{idPro:button.dataset.id,_token:$('meta[name="csrf-token"]').attr('content')});
+        if(response.status === 'success') { $(button).closest('tr').remove(); if(!document.querySelector('#table-product tr')) $('#table-product').html('<tr><td colspan="9" class="text-center py-5">Chưa có sản phẩm.</td></tr>'); }
+        $.toast({heading:'Thông báo',text:response.message,icon:response.status === 'success' ? 'success' : 'error',position:'bottom-right'});
+    } catch(error) { $.toast({heading:'Không thể xóa',text:error.responseJSON?.message || 'Vui lòng thử lại.',icon:'error',position:'bottom-right'}); }
+    finally { button.disabled=false; }
 });

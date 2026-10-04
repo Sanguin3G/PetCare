@@ -101,9 +101,9 @@ class Product extends Model
                 $indexImg = 0;
                 foreach ($files as $value) {
                     $indexImg++;
-                    $extension = $value->getClientOriginalExtension(); //get extension of file
-                    $filename =    $indexImg . time() . '.' . $extension;
-                    $value->move('assets/img-add-pro/', $filename);
+                    $extension = $value->extension(); //get extension of file
+                    $filename =    Str::uuid() . '.' . $extension;
+                    $value->move(public_path('assets/img-add-pro'), $filename);
                     $imageProduct = ImageProduct::create([
                         'idPro' => $product->idPro,
                         'image' => $filename
@@ -167,9 +167,9 @@ class Product extends Model
             if ($files = $request->file('imagepro')) {
                 foreach ($files as $value) {
                     $indexImg++;
-                    $extension = $value->getClientOriginalExtension(); //lay tep mo rong cua file
-                    $filename =    $indexImg . time() . '.' . $extension;
-                    $value->move('assets/img-add-pro/', $filename);
+                    $extension = $value->extension(); //lay tep mo rong cua file
+                    $filename =    Str::uuid() . '.' . $extension;
+                    $value->move(public_path('assets/img-add-pro'), $filename);
                     $imageProduct = ImageProduct::create([
                         'idPro' => $product->idPro,
                         'image' => $filename

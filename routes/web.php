@@ -28,25 +28,23 @@ use App\Http\Controllers\User\ProductUserController;
 // Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('loginGoogle');
 // Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
 //user view
-Route::get('pdf', function () {
-    return view('template.BillTemplate');
-});
+
 Route::prefix('')->group(function () {
-    Route::get('orderUser/cancel/{id}', [OrderUserController::class, 'cancelOrder'])->name('user.deleteOrder');
+
     //phải đăng nhập mới được truy cập
     //infor user
-    Route::get('infor', [UserController::class, 'inforUser'])->name('user.infor');
+    Route::view('account', 'User.ProfilePage')->name('user.account');
     //Change pass
-    Route::get('changePass', [UserController::class, 'changePassForm'])->name('user.changePassForm');
+    Route::view('changePass', 'User.SecurityPage')->name('user.changePassForm');
     //follow orrder
-    Route::get('orderUser', [OrderUserController::class, 'index'])->name('user.orderView');
+    Route::view('orderUser', 'User.OrdersPage')->name('user.orderView');
     //forget pass
     Route::get('forgetPass', function () {
         return view('User.ForgetPasswordView');
     })->name('user.forgetPass');
-    Route::post('forgetPass', [UserController::class, 'forgetPass'])->name('user.sendEmail');
-    Route::get('resetPassView/{token}', [UserController::class, 'Notification'])->name('user.LoadResetPassView');
-    Route::post('resetPass', [UserController::class, 'resetPassword'])->name('user.resetPass');
+
+    Route::get('resetPassView/{token}', fn () => redirect()->route('user.forgetPass'))->name('user.LoadResetPassView');
+
     Route::get('login', [CustomerController::class, 'Login'])->name('user.login');
     Route::get('register', [CustomerController::class, 'Register'])->name('user.register');
     // Route::post('registerUser', [UserController::class, 'register'])->name('user.registAccount');
@@ -54,12 +52,10 @@ Route::prefix('')->group(function () {
     Route::get('about', function () {
         return view('User.AboutView');
     })->name('user.about');
-    Route::get('service', [ServiceController::class, 'index'])->name('user.service');
+    // Services and bookings remain dormant: their schema and views are absent.
     //product
     // Route::get('product/nam', [ProductUserController::class, 'SortProduct'])->name('user.sort');
-    Route::get('contact', function () {
-        return view('User.contact');
-    })->name('user.contact');
+
     //Cart
     Route::get('cart', [CartController::class, 'index'])->name('user.cart');
     Route::get('product/detail/{id}/{name}', [ProductUserController::class, 'getDetail'])->name('user.productDetail');
@@ -71,12 +67,15 @@ Route::get('admin/login', function () {
     return view('Admin.LoginView');
 })->name('admin.login');
 
+Route::post('admin/session', [\App\Http\Controllers\Admin\AdminSessionController::class, 'establish']);
+Route::post('admin/session/clear', [\App\Http\Controllers\Admin\AdminSessionController::class, 'clear']);
+
 Route::get('admin/register', function () {
     return view('Admin.RegisterView');
-})->name('admin.regist');
+})->middleware(\App\Http\Middleware\RequireAdminSession::class)->name('admin.regist');
 
 // Routes yêu cầu xác thực (admin)
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(\App\Http\Middleware\RequireAdminSession::class)->group(function () {
 
     // Trang chủ
     Route::get('', [HomeController::class, 'index'])->name('admin.home');
@@ -85,7 +84,7 @@ Route::prefix('admin')->group(function () {
     Route::get('profile', [UserController::class, 'profile'])->name('admin.profile');
 
     // Logout
-    Route::get('logout', [UserController::class, 'logOut'])->name('admin.logout');
+
 
     // Quản lý sản phẩm
     Route::get('product', [ProductController::class, 'index'])->name('admin.product');
@@ -98,8 +97,8 @@ Route::prefix('admin')->group(function () {
 
     // Quản lý đơn hàng
     Route::get('order', [OrderController::class, 'index'])->name('admin.order');
-    Route::get('order/detail/{id}', [OrderController::class, 'detail'])->name('admin.detail');
-    Route::get('order/delivery/{id}', [OrderController::class, 'delivery'])->name('admin.delivery');
+
+
 });
 Route::get('permit', function () {
     return view('template.Permit_Access');

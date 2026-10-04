@@ -1,68 +1,21 @@
-var UrlFetch = "/api/auth/user/login";
-$(".buttonLogin").on("click", function (event) {
+import {request, feedback} from './auth';
+const form = document.getElementById('formLoginn');
+form.addEventListener('submit', async event => {
     event.preventDefault();
-    var username = $("#yourUsername").val().trim();
-    var pass = $("#yourPassword").val().trim();
-    if (username === "" || pass === "") {
-        alert("Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-    $(".loading-overlay").removeClass("d-none");
-    var data = {
-        _token: $('meta[name="csrf-token"]').attr("content"),
-        email: username,
-        password: pass,
-    };
+    if (!form.reportValidity()) return;
+    const email = form.email.value.trim();
+    const result = await request(form, '/api/auth/user/login', {email, password: form.password.value}, 'Đang đăng nhập…');
+    if (!result) return;
+    if (typeof result.data !== 'string' || !result.data) { feedback(form, 'Không thể đăng nhập. Vui lòng thử lại.'); return; }
     try {
-        $.ajax({
-            url: UrlFetch,
-            type: "POST",
-            data: data,
-            success: function (response) {
-                $(".loading-overlay").addClass("d-none");
-                if (response.message === "Thành công") {
-                    $.toast({
-                        heading: "Thông báo",
-                        text: response.message,
-                        showHideTransition: "slide",
-                        icon: "success",
-                        position: "bottom-right",
-                    });
-                    var expirationTime =
-                        new Date().getTime() + 15 * 24 * 60 * 60 * 1000; // 15 ngày
-                    localStorage.setItem(
-                        "authTokenPassport_user",
-                        response.data
-                    );
-                    localStorage.setItem(
-                        "authTokenPassport_user_expired_at",
-                        expirationTime
-                    );
-                    localStorage.setItem("Email_User", username);
-                    window.location.href = "/";
-                } else {
-                    $.toast({
-                        heading: "Thông báo",
-                        text: response.message || "Đăng nhập thất bại",
-                        showHideTransition: "slide",
-                        icon: "error",
-                        position: "bottom-right",
-                    });
-                }
-            },
-            error: function (xhr) {
-                console.log("Login error:", xhr.responseJSON);
-                $(".loading-overlay").addClass("d-none");
-                $.toast({
-                    heading: "Lỗi",
-                    text: xhr.responseJSON?.message || "Có lỗi xảy ra",
-                    showHideTransition: "slide",
-                    icon: "error",
-                    position: "bottom-right",
-                });
-            },
-        });
-    } catch (e) {
-        console.log(e);
+        localStorage.setItem('authTokenPassport_user', result.data);
+        localStorage.setItem('authTokenPassport_user_expired_at', Date.now() + 15 * 24 * 60 * 60 * 1000);
+        localStorage.setItem('Email_User', email);
+    } catch { feedback(form, 'Cho phép lưu trữ trình duyệt để đăng nhập.'); return; }
+    const next = new URLSearchParams(location.search).get('next');
+    let destination = '/';
+    if (next?.startsWith('/') && !next.startsWith('//')) {
+        try { const url = new URL(next, location.origin); if (url.origin === location.origin) destination = url.pathname + url.search + url.hash; } catch {}
     }
+    location.assign(destination);
 });

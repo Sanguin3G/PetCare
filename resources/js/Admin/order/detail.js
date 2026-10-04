@@ -1,71 +1,23 @@
-const csrfToken = $('meta[name="csrf-token"]').attr("content");
-const TokenApi = localStorage.getItem("authTokenPassport");
-const urlFetch = "/api/admin/order/detail/get";
-$(".btn-getdetail-order").on("click", function () {
-    $(".loading-overlay").removeClass("d-none");
-    var id = $(this).data("id");
-    $.ajax({
-        url: urlFetch + `/${id}`,
-        headers: {
-            Authorization: "Bearer " + TokenApi,
-        },
-        type: "GET",
-        success: function (response) {
-            if (!response.data) {
-                $(".main").empty();
-                $(".main").append(response);
-                $(".loading-overlay").addClass("d-none");
-                return;
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        },
-    });
+const headers={Authorization:`Bearer ${localStorage.getItem('authTokenPassport')}`};
+$(document).on('click','.btn-getdetail-order',async function() {
+    if(this.disabled) return;
+    const button=this; button.disabled=true;
+    try {
+        const html=await $.ajax({url:`/api/admin/order/detail/get/${button.dataset.id}`,headers});
+        if(typeof html !== 'string') throw new Error('No detail');
+        $('#main').html(html); document.getElementById('main').focus();
+    } catch(error) { $.toast({heading:'Không thể tải Đơn hàng',text:'Vui lòng thử lại.',icon:'error',position:'bottom-right'}); }
+    finally { button.disabled=false; }
 });
-$(".btn-đelivery").on("click", function () {
-    const urlFetch = "/api/admin/order/delivery";
-    if (confirm("Xác nhận giao hàng ?")) {
-        $(".loading-overlay").removeClass("d-none");
-        var id = $(this).data("id");
-        $.ajax({
-            url: urlFetch + `/${id}`,
-            headers: {
-                Authorization: "Bearer " + TokenApi,
-            },
-            type: "PATCH",
-            data: {
-                _token: csrfToken,
-            },
-            success: function (response) {
-                if (response.status === "success") {
-                    $.toast({
-                        heading: "Thông báo",
-                        text: "Confirm Order Successfully",
-                        showHideTransition: "slide",
-                        icon: response.status,
-                        position: "bottom-right",
-                    });
-                    const $row = $(`button[data-id='${id}']`).closest("tr");
-                    $row.find("td.btn-no-delivery").html(`
-            <button style="font-size:2vw;font-size:2vh" class="btn btn-success btn-delivery-success">Đã giao hàng</button>
-        `);
-                    $(".loading-overlay").addClass("d-none");
-                    return;
-                }
-                $.toast({
-                    heading: "Thông báo",
-                    text: "Has some wrong",
-                    showHideTransition: "slide",
-                    icon: response.status,
-                    position: "bottom-right",
-                });
-                $(".loading-overlay").addClass("d-none");
-            },
-            error: function (error) {
-                console.log(error);
-            },
-        });
-    }
-    return;
+$(document).on('click','.btn-delivery',async function() {
+    if(this.disabled || !confirm('Xác nhận Đơn hàng đã được giao?')) return;
+    const button=this; button.disabled=true;
+    try {
+        const response=await $.ajax({url:`/api/admin/order/delivery/${button.dataset.id}`,type:'PATCH',headers,data:{_token:$('meta[name="csrf-token"]').attr('content')}});
+        if(response.status !== 'success') throw new Error('Update failed');
+        $(button).closest('tr').find('.order-status').html('<span class="badge bg-success">Đã giao hàng</span>');
+        button.remove();
+        $.toast({heading:'Đã cập nhật',text:'Đơn hàng đã được giao.',icon:'success',position:'bottom-right'});
+    } catch(error) { $.toast({heading:'Không thể cập nhật',text:error.responseJSON?.message || 'Vui lòng thử lại.',icon:'error',position:'bottom-right'}); }
+    finally { button.disabled=false; }
 });

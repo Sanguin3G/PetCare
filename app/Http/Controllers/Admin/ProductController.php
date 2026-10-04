@@ -56,6 +56,7 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $this->validateProduct($request);
         try {
             $result = $this->product->StoreProductModel($request);
             if ($result) {
@@ -98,6 +99,7 @@ class ProductController extends Controller
      */
     public function update(string $id, Request $request): JsonResponse
     {
+        $this->validateProduct($request);
         try {
             $result = $this->product->updateModel($id, $request);
             if ($result === 'success') {
@@ -142,5 +144,15 @@ class ProductController extends Controller
         } catch (Throwable $e) {
             return ApiResponse::Error(null, 'Error', 'error', 500);
         }
+    }
+
+    private function validateProduct(Request $request): void
+    {
+        $request->validate([
+            'namepro' => 'required|string|max:255', 'mota' => 'nullable|string|max:20000',
+            'countpro' => 'required|integer|min:0', 'giabanpro' => 'required|integer|min:0',
+            'discount' => 'nullable|integer|min:0|max:100', 'danhmucAddpro' => 'required|exists:categories,idCat',
+            'imagepro' => 'nullable|array|max:8', 'imagepro.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        ]);
     }
 }

@@ -89,10 +89,11 @@ class Order extends Model
     public function getTotalCostOfProduct(string $idOrderDetail): string|null
     {
         try {
-            $orderDetail = OrderDetail::where('id', $idOrderDetail)->select('id', 'idPro', 'number', 'price')->first();
-            $discountProduct = $this->getDiscountProduct($orderDetail->idPro);
+            $orderDetail = OrderDetail::findOrFail($idOrderDetail);
+            $discountProduct = $orderDetail->discount_snapshot ?? $this->getDiscountProduct($orderDetail->idPro);
             if ($discountProduct > 0) {
-                return number_format(($orderDetail->price - ($orderDetail->price * ($discountProduct) / 100)) * $orderDetail->number);
+                $unitPrice = $orderDetail->price * (1 - $discountProduct / 100);
+                return number_format(($orderDetail->discount_snapshot !== null ? round($unitPrice) : $unitPrice) * $orderDetail->number);
             }
             return number_format($orderDetail->price * $orderDetail->number);
         } catch (Throwable $e) {
@@ -108,12 +109,13 @@ class Order extends Model
     public function getTotalCostOfOrder(string $id): int|null
     {
         try {
-            $order = OrderDetail::where('idOrder', $id)->select('idOrder', 'number', 'price', 'idPro')->get();
+            $order = OrderDetail::where('idOrder', $id)->get();
             $totalCostOfOrder = 0;
             foreach ($order as $row) {
-                $discountProduct = $this->getDiscountProduct($row->idPro);
+                $discountProduct = $row->discount_snapshot ?? $this->getDiscountProduct($row->idPro);
                 if ($discountProduct > 0) {
-                    $totalCostOfOrder += ($row->price - ($row->price * ($discountProduct) / 100)) * $row->number;
+                    $unitPrice = $row->price * (1 - $discountProduct / 100);
+                    $totalCostOfOrder += ($row->discount_snapshot !== null ? round($unitPrice) : $unitPrice) * $row->number;
                 } else {
                     $totalCostOfOrder += $row->number * $row->price;
                 }
@@ -132,7 +134,7 @@ class Order extends Model
     public function getListOrderUser(int $id): Collection|null
     {
         try {
-            $order = Order::where('idCus', $id)->orderBy("id", 'desc')->get();
+            $order = Order::where('idCus', $id)->orderBy('created_at', 'desc')->get();
             foreach ($order as $row) {
                 $row['totalCost'] = number_format($this->getTotalCostOfOrder($row->id));
                 $row['OrderDetail'] = $this->getDetailOrder($row->id);
@@ -151,7 +153,7 @@ class Order extends Model
             $Query = DB::table("orders as o")
                 ->join('users as u', 'u.id', '=', 'o.idCus')
                 ->select('o.id', 'o.status', 'o.created_at', 'o.idCus as IdCusInOrder', 'u.id as IdCusInUser', 'u.name', 'u.phone')
-                ->paginate(20);
+                ->orderByDesc('o.created_at')->paginate(20);
             return $Query;
         } catch (Throwable $e) {
             Log::error($e);
@@ -192,7 +194,11 @@ class Order extends Model
     {
         try {
             DB::beginTransaction();
-            $order = Order::find($id);
+            $order = Order::where('id', $id)->lockForUpdate()->first();
+            if (!$order || (int) $order->status !== 0) {
+                DB::rollBack();
+                return false;
+            }
             $order->status = 1;
             $order->save();
             DB::commit();

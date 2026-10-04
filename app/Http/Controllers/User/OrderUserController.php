@@ -1,26 +1,29 @@
 <?php
-
 namespace App\Http\Controllers\User;
-
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\OrderUserCollection;
-
 class OrderUserController extends Controller
 {
     public function getOrderList()
     {
-        $idCus = Auth::user()->id;
-        $model = new Order();
-        $Order = $model->getListOrderUser($idCus);
-        return view('User.OrderView', ['Order' => $Order]);
-        // return new OrderUserCollection(($Order));
-        // return response()->json($Order[0]->OrderDetail[0]->ProductDetail->ImageProduct[0]->image);
+        return view('User.OrderView', ['Order' => (new Order())->getListOrderUser(Auth::id()) ?? collect()]);
+    }
+    public function cancelOrder(string $id)
+    {
+        return DB::transaction(function () use ($id) {
+            $order = Order::where('idCus', Auth::id())->where('id', $id)->lockForUpdate()->firstOrFail();
+            if ((int) $order->status !== 0) {
+                return response()->json(['message' => 'Chỉ có thể hủy đơn đang chờ xác nhận.'], 422);
+            }
+            foreach (OrderDetail::where('idOrder', $order->id)->orderBy('idPro')->get() as $item) {
+                Product::where('idPro', $item->idPro)->increment('count', $item->number);
+            }
+            $order->update(['status' => -1]);
+            return response()->json(['message' => 'Đã hủy đơn hàng.']);
+        });
     }
 }

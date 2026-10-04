@@ -19,14 +19,12 @@ class CheckRoleAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::error('middleware');
-        Log::info(Auth::user());
         if (Auth::user()) {
             if (Auth::user()->role === 'admin') {
                 return $next($request);
             }
-            return ApiResponse::Success(null, "You don't have authority", 'error', 200);
+            return ApiResponse::Error(null, "You don't have authority", 'error', 403);
         }
-        return ApiResponse::Error(null, "Unauthorize", 'error', 200);
+        return ApiResponse::Error(null, "Unauthorize", 'error', 401);
     }
 }

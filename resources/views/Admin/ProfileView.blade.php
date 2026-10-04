@@ -1,153 +1,24 @@
 @extends('Admin.Layout')
 @section('content')
-<div class="pagetitle">
-  <h1 style="font-size:3vw;font-size:3vh">Trang cá nhân</h1>
-  <nav>
-    <ol class="breadcrumb" style="font-size:2vw;font-size:2vh">
-      <li class="breadcrumb-item"><button type="button" id="RedirectHomeInProfile">Home</button></li>
-      <li class="breadcrumb-item">Users</li>
-    </ol>
-  </nav>
-</div><!-- End Page Title -->
-
-<section class="section profile">
-  <div class="row">
-    <div class="col-xl-4">
-
-      <div class="card">
-        <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-
-          <img src="{{ asset('assets/img/PetCARE.png') }}" alt="Profile" class="rounded-circle">
-          <h2 id="UserName">
-          </h2>
-          <div class="social-links mt-2">
-            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-8">
-      <div class="card">
-        <div class="card-body pt-3">
-          <!-- Bordered Tabs -->
-          <ul class="nav nav-tabs nav-tabs-bordered" style="font-size:2vw;font-size:2vh">
-            <li class="nav-item">
-              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Cài đặt</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Đổi mật
-                khẩu</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile">Thông tin tài
-                khoản</button>
-            </li>
-          </ul>
-          <div class="tab-content pt-2">
-            <div class="tab-pane fade pt-3" id="profile-settings">
-              <!-- Settings Form -->
-              <form>
-                <div class="row mb-3" style="font-size:2vw;font-size:2vh">
-                  <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Thông báo Email</label>
-                  <div class="col-md-8 col-lg-9">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="changesMade" checked>
-                      <label class="form-check-label" for="changesMade">
-                        Thay đổi tài khoản
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="newProducts" checked>
-                      <label class="form-check-label" for="newProducts">
-                        Thông báo về sản phẩm và dịch vụ mới
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="proOffers">
-                      <label class="form-check-label" for="proOffers">
-                        Các chiến lược marketing
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="securityNotify" checked>
-                      <label class="form-check-label" for="securityNotify">
-                        Thông báo hệ thống
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <button type="submit" style="font-size:2vw;font-size:2vh" class="btn btn-primary">Lưu</button>
-                </div>
-              </form><!-- End settings Form -->
-            </div>
-            <div class="tab-pane fade pt-3" id="profile-change-password">
-              <!-- Change Password Form -->
-              <form method="post" style="font-size:2vw;font-size:2vh" id="FormUpdatePassWordAdmin">
-                <div class="row mb-3">
-                  <label for="currentPassword_update" class="col-md-4 col-lg-3 col-form-label">Mật khẩu hiện tại</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input name="currentPassword_update" type="password" class="form-control"
-                      style="border: 1px solid black" id="currentPassword_update">
-                  </div>
-                  </p>
-                </div>
-                <div class="row mb-3">
-                  <label for="newPassword_update" class="col-md-4 col-lg-3 col-form-label">Mật khẩu mới</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input style="border: 1px solid black" name="newPassword_update" type="password"
-                      class="form-control" id="newPassword_update">
-                  </div>
-                </div>
-                <div class="row mb-3">
-                  <label for="renewPassword_update" class="col-md-4 col-lg-3 col-form-label">Nhập lại mật khẩu
-                    mới</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input style="border: 1px solid black" name="renewPassword_update" type="password"
-                      class="form-control" id="renewPassword_update">
-                  </div>
-                  </p>
-                </div>
-                <div class="text-center">
-                  <button type="submit" name="changePassAdmin" style="font-size:2vw;font-size:2vh"
-                    class="btn btn-primary">Đổi mật khẩu</button>
-                </div>
-              </form>
-            </div>
-            {{-- account detail --}}
-            <div class="tab-pane fade pt-3" id="profile">
-              <form style="font-size:2vw;font-size:2vh" method="post" id="FormUpdateInforAdmin">
-                <div class="row mb-3">
-                  <label for="name" class="col-md-4 col-lg-3 col-form-label">Họ và tên</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input style="font-size:2vw;font-size:2vh" name="name" value="" type="text" class="form-control"
-                      id="name" required>
-                  </div>
-                </div>
-                <div class="row mb-3">
-                  <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
-                  <div class="col-md-8 col-lg-9">
-                    <input style="font-size:2vw;font-size:2vh" name="email" type="email" value="" class="form-control"
-                      id="email" required>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <button type="submit" style="font-size:2vw;font-size:2vh" name="changePassAdmin"
-                    class="btn btn-primary">Cập nhật thông tin</button>
-                </div>
-              </form><!-- End Change Password Form -->
-            </div>
-          </div><!-- End Bordered Tabs -->
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="loading-overlay d-none">
-    <div class="spinner"></div>
-  </div>
-</section>
+<div class="pagetitle"><h1>Tài khoản quản trị</h1><nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{{ route('admin.home') }}">Tổng quan</a></li><li class="breadcrumb-item active" aria-current="page">Tài khoản</li></ol></nav></div>
+<div class="row g-4">
+    <div class="col-lg-7"><section class="card h-100"><div class="card-body p-4">
+        <h2 class="h5 mb-2">Thông tin tài khoản</h2><p class="text-muted mb-4">Cập nhật tên và email dùng cho công việc tại PetCare.</p>
+        <form id="FormUpdateInforAdmin"><fieldset disabled id="admin-profile-fields">
+            <div class="mb-3"><label for="name">Họ và tên</label><input class="form-control" id="name" name="name" required maxlength="255" autocomplete="name"><div class="invalid-feedback" data-error-for="name"></div></div>
+            <div class="mb-4"><label for="email">Email</label><input class="form-control" id="email" name="email" type="email" required maxlength="255" autocomplete="email"><div class="invalid-feedback" data-error-for="email"></div></div>
+            <div class="alert d-none" data-form-feedback role="status" aria-live="polite"></div><button type="submit" class="btn btn-primary">Lưu thông tin</button>
+        </fieldset></form>
+    </div></section></div>
+    <div class="col-lg-5"><section class="card h-100"><div class="card-body p-4">
+        <h2 class="h5 mb-2">Đổi mật khẩu</h2><p class="text-muted mb-4">Sử dụng mật khẩu mới có ít nhất 8 ký tự.</p>
+        <form id="FormUpdatePassWordAdmin">
+            <div class="mb-3"><label for="old_password">Mật khẩu hiện tại</label><input class="form-control" id="old_password" name="old_password" type="password" required autocomplete="current-password"><div class="invalid-feedback" data-error-for="old_password"></div></div>
+            <div class="mb-3"><label for="new_password">Mật khẩu mới</label><input class="form-control" id="new_password" name="new_password" type="password" required minlength="8" maxlength="255" autocomplete="new-password"><div class="invalid-feedback" data-error-for="new_password"></div></div>
+            <div class="mb-4"><label for="new_password_confirmation">Nhập lại mật khẩu mới</label><input class="form-control" id="new_password_confirmation" name="new_password_confirmation" type="password" required minlength="8" maxlength="255" autocomplete="new-password"><div class="invalid-feedback" data-error-for="new_password_confirmation"></div></div>
+            <div class="alert d-none" data-form-feedback role="status" aria-live="polite"></div><button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+        </form>
+    </div></section></div>
+</div>
 @vite('resources/js/Admin/account/updateInfor.js')
 @endsection

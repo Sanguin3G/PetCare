@@ -128,8 +128,7 @@
                             @endif
                             @if ($row->discount > 0)
                             <td>
-                                {{ number_format($row->number * ($row->price - $row->price *
-                                ($row->discount / 100))) }}đ
+                                {{ number_format($row->number * round($row->price * (1 - $row->discount / 100))) }}đ
                             </td>
                             @else
                             <td>
@@ -150,9 +149,7 @@
             @endif
         </div>
         <div class="footer">
-            <p>Nếu bạn có bất kỳ câu hỏi nào, hãy liên hệ với chúng tôi qua email
-                <strong>petcare@gmail.com</strong>.
-            </p>
+            <p>Bạn có thể xem chi tiết và trạng thái đơn trong mục Đơn hàng trên PetCare.</p>
         </div>
     </div>
 

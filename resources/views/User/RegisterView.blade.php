@@ -1,117 +1,15 @@
-<!DOCTYPE html>
-<html lang="vi" data-theme="light" data-theme-preference="system">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký | PetCare</title>
-    <script>
-        (() => {
-            try {
-                const preference = localStorage.getItem('petcare-theme') || 'system';
-                document.documentElement.dataset.themePreference = preference;
-                document.documentElement.dataset.theme = preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : preference === 'system' ? 'light' : preference;
-            } catch (error) {}
-        })();
-    </script>
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/PetCARE.png') }}">
-      <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/user-responsive.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/user1.css') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {{-- toast message --}}
-    <script src="
-                                        https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js
-                                        "></script>
-    <link href="
-        https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css
-        "
-        rel="stylesheet">
-    @vite(['resources/css/petcare.css', 'resources/js/User/theme.js', 'resources/js/User/account/create.js'])
-</head>
-
-<body class="pc-auth">
-    <div class="pc-auth-theme">
-        @include('User.partials.theme-toggle')
-    </div>
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="row border rounded-5 p-3 bg-white shadow box-area">
-            <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
-                style="background:  #FFE4DA;">
-                <div class="featured-image mb-3">
-                        <img src="{{ asset('assets/img/PetCARE.png') }}" class="img-fluid mt-3" style="width:100%" alt="PetCare">
-                </div>
-            </div>
-            <div class="col-md-6 right-box">
-                <div class="row align-items-center text-center">
-                    <div class="header-text mb-4">
-                        <h3 style="font-family: 'Courier New', Courier, monospace;font-weight: 600;">Đăng Ký</h3>
-                    </div>
-                    <form id="loginForm" method="post">
-                        <div class="form-group mb-3">
-                            <input type="username" name="name" class="form-control form-control-lg bg-light fs-6"
-                                id="yourName" placeholder="Tên người dùng">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input name="email" class="form-control form-control-lg bg-light fs-6" id="yourEmail"
-                                placeholder="Địa chỉ Email">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input type="text" name="phone" class="form-control form-control-lg bg-light fs-6"
-                                id="yourPhone" placeholder="Số điện thoại">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input type="password" name="password" class="form-control form-control-lg bg-light fs-6"
-                                id="yourPassword" placeholder="Mật Khẩu">
-                        </div>
-                        <div class="form-group mb-3">
-                            <input type="password" name="password_confirmation"
-                                class="form-control form-control-lg bg-light fs-6" id="yourConfirmPassword"
-                                placeholder="Nhập lại mật khẩu">
-                        </div>
-                        <div class="input-group mb-3">
-                            <button class="btn btn-lg btn-warning w-100 fs-6" type="submit" name="dangky"
-                                id="FormRegisterUserButton">Đăng Ký</button>
-                        </div>
-                    </form>
-                    <!-- Modal OTP -->
-                    <div class="modal fade" id="OTP" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Thông báo
-                                    </h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <label for="yourOTP" class="form-label">Mã OTP</label>
-                                    <input style="border: 1px solid black" type="text" name="yourOTP"
-                                        class="form-control" id="yourOTP" required>
-                                    <i>Vui lòng kiểm tra Gmail và nhập mã OTP</i>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" id="submitOTP" class="btn btn-primary">Đồng
-                                        ý</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <small>Bạn đã có tài khoản? <a href="{{ route('user.login') }}">Đăng Nhập</a></small>
-                    </div>
-                    <div class="loading-overlay d-none">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-    </div>
-</body>
-
-</html>
+@extends('User.partials.auth-layout')
+@section('title', 'Đăng ký')
+@section('intro', 'Tạo tài khoản để đặt hàng và theo dõi đơn của bạn.')
+@section('auth-content')
+<form id="loginForm"><div class="mb-3"><label for="yourName" class="form-label">Họ và tên</label><input id="yourName" name="name" type="text" autocomplete="name" class="form-control" required maxlength="255"></div>
+<div class="mb-3"><label for="yourEmail" class="form-label">Email</label><input id="yourEmail" name="email" type="email" autocomplete="email" class="form-control" required ></div>
+<div class="mb-3"><label for="yourPhone" class="form-label">Số điện thoại</label><input id="yourPhone" name="phone" type="tel" autocomplete="tel" class="form-control" required pattern="0[35789][0-9]{8}" title="Số điện thoại Việt Nam gồm 10 chữ số"></div>
+<div class="mb-3"><label for="yourPassword" class="form-label">Mật khẩu</label><div class="pc-password-field"><input id="yourPassword" name="password" type="password" autocomplete="new-password" class="form-control" required minlength="8" aria-describedby="password-hint"><button type="button" class="pc-password-toggle" data-password-toggle="yourPassword" aria-controls="yourPassword" aria-pressed="false">Hiện</button></div></div>
+<p id="password-hint" class="small pc-auth-intro">Ít nhất 8 ký tự. Nên kết hợp chữ, số và ký hiệu.</p><div class="mb-3"><label for="yourConfirmPassword" class="form-label">Nhập lại mật khẩu</label><div class="pc-password-field"><input id="yourConfirmPassword" name="password_confirmation" type="password" autocomplete="new-password" class="form-control" required minlength="8"><button type="button" class="pc-password-toggle" data-password-toggle="yourConfirmPassword" aria-controls="yourConfirmPassword" aria-pressed="false">Hiện</button></div></div>
+<p class="pc-auth-feedback d-none" data-feedback role="status" aria-live="polite"></p><button type="submit" class="btn btn-primary w-100" id="FormRegisterUserButton">Gửi mã xác nhận</button></form><p class="mt-4 mb-0">Đã có tài khoản? <a href="{{ route('user.login') }}">Đăng nhập</a></p><div class="modal fade" id="OTP" tabindex="-1" aria-labelledby="otp-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h2 class="modal-title h5" id="otp-title">Xác nhận email</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div><form id="otp-form"><div class="modal-body"><p>Nhập mã vừa được gửi tới <strong id="otp-email"></strong>. Kiểm tra thư rác nếu chưa thấy email.</p><div class="mb-3"><label for="yourOTP" class="form-label">Mã xác nhận</label><input id="yourOTP" name="OTP" type="text" autocomplete="one-time-code" class="form-control" required inputmode="numeric"></div>
+<p class="pc-auth-feedback d-none" data-feedback role="status" aria-live="polite"></p></div><div class="modal-footer"><button type="submit" id="submitOTP" class="btn btn-primary">Tạo tài khoản</button></div></form></div></div></div>
+@endsection
+@section('auth-script')
+@vite('resources/js/User/account/create.js')
+@endsection

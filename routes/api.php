@@ -27,26 +27,32 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Service;
 
+Route::get('products/search', [ProductUserController::class, 'search']);
+Route::get('user/product', [ProductUserController::class, 'getProductAjax']);
+
 Route::prefix('auth')->group(function () {
     Route::post('product/findBySearch', [ProductController::class, 'findProductByName']);
     Route::post('admin/login', [UserController::class, 'checkLogin']);
     Route::prefix('user')->group(function () {
-        Route::get('account/regist', [CustomerController::class, 'RegistAccount']);
+
         Route::post('login', [UserController::class, 'checkLogin']);
         Route::post('register', [UserController::class, 'createAccountController']);
         Route::post('register/sendOTP', [UserController::class, 'sendOTPCreateAccountController']);
         Route::post('account/forgetpass/request/sendOTP', [CustomerController::class, 'sendOTPForgetPassController']);
         Route::post('account/forgetpass/request/resetPass', [CustomerController::class, 'resetPasswordController']);
     });
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware(['auth:api', 'CheckRoleAdmin'])->group(function () {
         Route::post('register', [UserController::class, 'createAccountController']);
         Route::post('register/sendOTP', [UserController::class, 'sendOTPCreateAccountController']);
     });
 });
 Route::middleware('auth:api')->group(function () {
     Route::prefix('user')->group(function () {
+        Route::get('account/profile', [UserController::class, 'getUserProfile']);
+        Route::patch('account/profile', [UserController::class, 'updateProfile']);
+        Route::post('cart/quote', [CartController::class, 'quote']);
         Route::post("cart/checkout", [CartController::class, 'Checkout']);
-        Route::get('product', [ProductUserController::class, 'getProductAjax']);
+        Route::patch('order/{id}/cancel', [OrderUserController::class, 'cancelOrder']);
         Route::post('account/logout', [CustomerController::class, 'Logout']);
         Route::get('order', [OrderUserController::class, 'getOrderList']);
         Route::get('account/changepass/view', [CustomerController::class, 'GetChangePassView']);
@@ -54,6 +60,8 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::prefix('admin')->middleware('CheckRoleAdmin')->group(function () {
         Route::get('profile', [UserController::class, 'getUserProfile']);
+        Route::patch('profile', [UserController::class, 'updateProfile']);
+        Route::patch('account/changepass', [CustomerController::class, 'changePass']);
         Route::post('logout', [UserController::class, 'Logout']);
 
         Route::post('createStaff', [StaffController::class, 'store']);

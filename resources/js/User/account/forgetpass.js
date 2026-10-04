@@ -1,107 +1,25 @@
-const token = localStorage.getItem("authTokenPassport_user");
-const life_time = localStorage.getItem("authTokenPassport_user_expired_at");
-const csfrToken = $('meta[name="csrf-token"]').attr("content");
-var email = null;
-$("#yourPassword").on("change", function () {
-    // 8 ký tự  bao gồm chữ , số , chữ hoa
-    // const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8})$/;
-    const regex = /^.{8,}$/;
-
-    var pass = $(this).val();
-    var check = regex.test(pass);
-    if (check) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
-$("#yourConfirmPassword").on("change", function () {
-    // const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8})$/;
-    const regex = /^.{8,}$/;
-    var rePass = $(this).val();
-    var check = regex.test(rePass);
-    if (check && rePass === $("#yourPassword").val()) {
-        $(this).removeClass("is-invalid").addClass("is-valid");
-    } else {
-        $(this).removeClass("is-valid").addClass("is-invalid");
-    }
-});
-$("#btn-send-OTP").on("click", function (event) {
+import {request, feedback, passwordsMatch} from './auth';
+const sendForm = document.getElementById('send-otp-form');
+const resetForm = document.querySelector('.formResetPass');
+let verifiedEmail;
+sendForm.addEventListener('submit', async event => {
     event.preventDefault();
-    email = $("#yourEmail").val().trim();
-    if (!email) {
-        alert("please fill your email out");
-        return;
-    }
-    $(".loading-overlay").removeClass("d-none");
-    $.ajax({
-        url: "/api/auth/user/account/forgetpass/request/sendOTP",
-        type: "POST",
-        data: {
-            _token: csfrToken,
-            email: email,
-        },
-        success: function (response) {
-            $(".loading-overlay").addClass("d-none");
-            if (response.message === "Success") {
-                $.toast({
-                    heading: "Thông báo",
-                    text: "OTP sent successfully. Check your email and get OTP code",
-                    showHideTransition: "slide",
-                    icon: "success",
-                    position: "bottom-right",
-                });
-            }
-        },
-        error: function (error) {
-            $(".loading-overlay").addClass("d-none");
-            $.toast({
-                heading: "Thông báo",
-                text: "Some wrong has occured. Please try again later",
-                showHideTransition: "slide",
-                icon: "error",
-                position: "bottom-right",
-            });
-        },
-    });
+    if (!sendForm.reportValidity()) return;
+    const email = sendForm.email.value.trim();
+    const result = await request(sendForm, '/api/auth/user/account/forgetpass/request/sendOTP', {email}, 'Đang gửi mã…');
+    if (!result) return;
+    verifiedEmail = email;
+    resetForm.hidden = false;
+    feedback(sendForm, 'Đã gửi mã xác nhận. Kiểm tra hộp thư và thư rác.', true);
+    document.getElementById('yourOTP').focus();
 });
-$("#Btn-reset-pass").on("click", function () {
-    if ($("#yourOTP").val() === "" || $(".is-invalid").length > 0) {
-        alert("Vui lòng kiểm tra lại thông tin");
-        return;
-    }
-    $(".loading-overlay").removeClass("d-none");
-    $.ajax({
-        url: "/api/auth/user/account/forgetpass/request/resetPass",
-        type: "POST",
-        data: {
-            _token: csfrToken,
-            email: email,
-            OTP: $("#yourOTP").val().trim(),
-            password: $("#yourPassword").val().trim(),
-        },
-        success: function (response) {
-            $(".loading-overlay").addClass("d-none");
-            $.toast({
-                heading: "Thông báo",
-                text: response.message,
-                showHideTransition: "slide",
-                icon: response.status,
-                position: "bottom-right",
-            });
-            if (response.message === "Reset password successfully") {
-                window.location.reload();
-            }
-        },
-        error: function (error) {
-            $(".loading-overlay").addClass("d-none");
-            $.toast({
-                heading: "Thông báo",
-                text: "Some wrong has occured. Please try again later",
-                showHideTransition: "slide",
-                icon: "error",
-                position: "bottom-right",
-            });
-        },
-    });
+sendForm.email.addEventListener('input', () => { verifiedEmail = null; resetForm.hidden = true; feedback(sendForm, ''); });
+resetForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!verifiedEmail || !passwordsMatch(resetForm)) return;
+    const result = await request(resetForm, '/api/auth/user/account/forgetpass/request/resetPass', {email: verifiedEmail, OTP: resetForm.OTP.value.trim(), password: resetForm.password.value}, 'Đang đổi mật khẩu…');
+    if (!result) return;
+    feedback(resetForm, 'Đã đổi mật khẩu. Đang chuyển tới đăng nhập…', true);
+    resetForm.querySelector('[type="submit"]').disabled = true;
+    setTimeout(() => location.assign('/login'), 1000);
 });

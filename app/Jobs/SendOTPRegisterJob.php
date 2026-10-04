@@ -41,8 +41,8 @@ class SendOTPRegisterJob implements ShouldQueue
                 'email' => $this->email,
                 'OTP' => $this->OTP,
                 'type' => 'regist',
-                'created_at' => Carbon::now('Asia/Ho_Chi_Minh'),
-                'expired_at' => Carbon::now('Asia/Ho_Chi_Minh')->addMinutes(10)
+                'created_at' => Carbon::now(),
+                'expired_at' => Carbon::now()->addMinutes(10)
             ]);
             Mail::send("template.SendOTPRegisterAccount", ['OTP' => $this->OTP], function ($message) {
                 $message->to($this->email);
