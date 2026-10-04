@@ -2,8 +2,8 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "sanguin3g/petcare",
     "type": "project",
-    "description": "PetCare, a pet-care marketplace and service platform.",
-    "keywords": ["laravel", "petcare", "ecommerce", "booking", "api"],
+    "description": "PetCare, a responsive Laravel pet-care storefront and portfolio demo.",
+    "keywords": ["laravel", "petcare", "ecommerce", "portfolio", "api"],
     "license": "MIT",
     "authors": [
         {
